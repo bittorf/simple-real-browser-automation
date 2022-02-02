@@ -17,8 +17,15 @@ browser_stop()
 	done
 }
 
+pid_exists()
+{
+	kill -0 "${1:-foo}" 2>/dev/null
+}
+
 resetbrowser()
 {
+	local pid=
+
         sysctl -qw vm.panic_on_oom=2
         sysctl -qw kernel.panic_on_oops=1
         sysctl -qw kernel.panic=10
@@ -35,6 +42,18 @@ resetbrowser()
 	# wait till really ready:
         while ! ID="$( xdotool search --classname Navigator )"; do sleep 1; done
 	sleep 1
+
+	true >/tmp/UA
+	true >/tmp/ACCEPT_LANG
+	while ! test -s /tmp/UA; do {
+		pid_exists "$pid" || {
+			nc -l -p 8080 -e $0 detect_headers &
+			pid=$!
+		}
+
+		type_url_into_bar 'http://127.0.0.1:8080'
+		xdotool key Return
+	} done
 }
 
 press_enter_and_measure_time_till_network_relax_max10sec()
@@ -123,7 +142,45 @@ get_url()
         printf '%s\n' "$OUT"
 }
 
+type_url_into_bar()
+{
+	local url="$1"
+
+	xdotool key ctrl+t			# new tab
+	xdotool key ctrl+Page_Up		# go back to old tab
+	xdotool key ctrl+w			# close (old) tab
+	xdotool key ctrl+l			# jump to url-bar
+	xdotool key BackSpace sleep 0.6		# make sure we start empty
+	xdotool type --delay 300 "$url "	# append a space
+}
+
 case "$ACTION" in
+	detect_headers)
+		printf '%s\n\n' 'HTTP/1.1 200 OK'
+		printf '%s' 'OK'
+
+		I=2
+		while read -r LINE; do {
+			case "$LINE" in
+				'User-Agent:'*)
+					set -- $LINE
+					shift
+
+					printf '%s\n' "$*" >/tmp/UA
+					I=$(( I - 1 ))
+					test $I -eq 0 && exit
+				;;
+				'Accept-Language:'*)
+					set -- $LINE
+					shift
+
+					printf '%s\n' "$*" >/tmp/ACCEPT_LANG
+					I=$(( I - 1 ))
+					test $I -eq 0 && exit
+				;;
+			esac
+		} done
+	;;
         screenshot)
                 # GTmetrix.com
                 # call main with args + TODO: count bytes + streams + time + w3c validator? + effective URL + compression?
@@ -174,8 +231,8 @@ case "$ACTION" in
   "time_date": "$DATE timezone $( tail -n1 /etc/localtime )",
   "url_userinput": "$( cat /tmp/URL )",
   "url_effective": "$( get_url )",
-  "http_accept_language": "ToDo",
-  "user_agent": "ToDo",
+  "http_accept_language": "$( cat /tmp/ACCEPT_LANG )",
+  "user_agent": "$( cat /tmp/UA )",
   "download_time_ms": $TIME_MS,
   "download_size_bytes": $( cat /tmp/DOWNLOAD_BYTES ),
   "network_public_ip": ${PUBIP:+\"}${PUBIP:-null}${PUBIP:+\"},
@@ -251,14 +308,8 @@ EOF
 		echo "$PUBIP"   >/tmp/PUBIP
 		echo "$COUNTRY" >/tmp/COUNTRY
 
-                # prepare:
-                xdotool windowsize "$ID" "$X" "$Y"
-                xdotool key ctrl+t			# new tab
-                xdotool key ctrl+Page_Up		# go back to old tab
-                xdotool key ctrl+w			# close (old) tab
-                xdotool key ctrl+l			# jump to url-bar
-                xdotool key BackSpace sleep 0.6		# make sure we start empty
-                xdotool type --delay 300 "$URL "	# append a space
+                xdotool windowsize "$ID" "$X" "$Y"	# resize to fit screen
+		type_url_into_bar "$URL"
 
                 press_enter_and_measure_time_till_network_relax_max10sec
         ;;
