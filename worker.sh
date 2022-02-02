@@ -128,11 +128,11 @@ case "$ACTION" in
                 # GTmetrix.com
                 # call main with args + TODO: count bytes + streams + time + w3c validator? + effective URL + compression?
 
-		>/tmp/screen.png
-		>/tmp/screen.jpg
-		>/tmp/screen.base64
-		>/tmp/screen.size
-		>/tmp/screen.format
+		true >/tmp/screen.png
+		true >/tmp/screen.jpg
+		true >/tmp/screen.base64
+		true >/tmp/screen.size
+		true >/tmp/screen.format
 
                 case "$ARG" in
                         png)
@@ -156,7 +156,7 @@ case "$ACTION" in
                 esac
         ;;
         report)
-		DATE="$( read -r UNIX </tmp/URL_START && LC_ALL=C date -d@$UNIX )"
+		DATE="$( read -r UNIX </tmp/URL_START && LC_ALL=C date "-d@$UNIX" )"
 
 		read -r SIZE    </tmp/screen.size   || SIZE=
 		read -r BASE64  </tmp/screen.base64 || BASE64=
@@ -178,8 +178,8 @@ case "$ACTION" in
   "user_agent": "ToDo",
   "download_time_ms": $TIME_MS,
   "download_size_bytes": $( cat /tmp/DOWNLOAD_BYTES ),
-  "netowrk_public_ip": ${PUBIP:+\"}${PUBIP:-null}${PUBIP:+\"},
-  "netowrk_country": ${COUNTRY:+\"}${COUNTRY:-null}${COUNTRY:+\"},
+  "network_public_ip": ${PUBIP:+\"}${PUBIP:-null}${PUBIP:+\"},
+  "network_country": ${COUNTRY:+\"}${COUNTRY:-null}${COUNTRY:+\"},
   "network_action": [
 $(
   read -r DATA </tmp/NETWORK_ACTION
@@ -224,11 +224,11 @@ EOF
                 geturl
         ;;
         loadurl)
-		>/tmp/screen.png
-		>/tmp/screen.jpg
-		>/tmp/screen.base64
-		>/tmp/screen.size
-		>/tmp/screen.format
+		true >/tmp/screen.png
+		true >/tmp/screen.jpg
+		true >/tmp/screen.base64
+		true >/tmp/screen.size
+		true >/tmp/screen.format
 
                 url_decode() {
                         local url="$1"

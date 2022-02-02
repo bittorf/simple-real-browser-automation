@@ -19,8 +19,8 @@ outputs:
   "user_agent": "ToDo",
   "download_time_ms": 2420,
   "download_size_bytes": 496404,
-  "netowrk_public_ip": "185.97.181.129",
-  "netowrk_country": "Germany",
+  "network_public_ip": "185.97.181.129",
+  "network_country": "Germany",
   "network_action": [
     {"tims_ms":   20, "bytes_down":      0, "bytes_up":      0},
     {"tims_ms":  130, "bytes_down":    949, "bytes_up":   1324},
