@@ -1,3 +1,57 @@
+### Usage
+
+./boot-vm.sh
+
+curl "http://127.0.0.1:10080/help
+curl "http://127.0.0.1:10080/loadurl=http://c64.de"
+curl "http://127.0.0.1:10080/screenshot=jpg"
+curl "http://127.0.0.1:10080/action=report"
+
+```
+{
+  "time_unix": 1643808355,
+  "time_date": "Wed Feb  2 14:25:55 CET 2022 timezone CET-1CEST,M3.5.0,M10.5.0/3",
+  "url_userinput": "http://c64.de",
+  "url_effective": "https://icomp.de/shop-icomp/en/news.html",
+  "http_accept_language": "ToDo",
+  "user_agent": "ToDo",
+  "download_time_ms": 2420,
+  "download_size_bytes": 496404,
+  "netowrk_public_ip": "185.97.181.129",
+  "netowrk_country": "Germany",
+  "network_action": [
+    {"tims_ms":   20, "bytes_down":      0, "bytes_up":      0},
+    {"tims_ms":  130, "bytes_down":    949, "bytes_up":   1324},
+    {"tims_ms":  230, "bytes_down":   6618, "bytes_up":   1707},
+    {"tims_ms":  330, "bytes_down":    975, "bytes_up":    578},
+    {"tims_ms":  440, "bytes_down":    915, "bytes_up":    527},
+    {"tims_ms":  540, "bytes_down":      0, "bytes_up":      0},
+    {"tims_ms":  640, "bytes_down":   6224, "bytes_up":    120},
+    {"tims_ms":  740, "bytes_down":   5152, "bytes_up":   1064},
+    {"tims_ms":  850, "bytes_down":      0, "bytes_up":      0},
+    {"tims_ms":  960, "bytes_down":    145, "bytes_up":    100},
+    {"tims_ms": 1060, "bytes_down":     60, "bytes_up":      0},
+    {"tims_ms": 1170, "bytes_down":      0, "bytes_up":      0},
+    {"tims_ms": 1280, "bytes_down":  26321, "bytes_up":   6050},
+    {"tims_ms": 1390, "bytes_down": 109899, "bytes_up":   3488},
+    {"tims_ms": 1500, "bytes_down":  95390, "bytes_up":   3462},
+    {"tims_ms": 1600, "bytes_down": 234656, "bytes_up":   4380},
+    {"tims_ms": 1710, "bytes_down":      0, "bytes_up":      0},
+    {"tims_ms": 1810, "bytes_down":      0, "bytes_up":      0},
+    {"tims_ms": 1910, "bytes_down":      0, "bytes_up":      0},
+    {"tims_ms": 2020, "bytes_down":   7576, "bytes_up": 124228},
+    {"tims_ms": 2120, "bytes_down":    972, "bytes_up":  13524},
+    {"tims_ms": 2220, "bytes_down":    368, "bytes_up":    700},
+    {"tims_ms": 2320, "bytes_down":      0, "bytes_up":      0},
+    {"tims_ms": 2420, "bytes_down":    184, "bytes_up":    310}],
+  "browser_version": "Mozilla Firefox 78.3.0esr",
+  "resolution": "1280x720",
+  "screenshot_size": 37744,
+  "screenshot_format": "jpg",
+  "screenshot": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDACAWGBwYFCAcGhwkIiAmMFA0MCwsMGJGSjpQdG....."
+}
+```
+
 ### Setup
 
 ```
@@ -80,276 +134,17 @@ rc-update del dropbear default
 rc-update del acpid		# still working 'poweroff'
 reboot
 
-# später alles in eine datei:
-wget -O setup.sh "github..." && sh setup
-# +datei: /etc/local.d/api.sh
-# +datei: /root/worker.sh
+# TODO: all in one setupfile:
+# wget -O setup.sh "github..." && sh setup
+BASE='https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main'
+FILE='/etc/local.d/api.sh' && wget -O "$FILE" "$BASE/api.sh"    && chmod +x "$FILE"
+FILE='/root/worker.sh'     && wget -O "$FILE" "$BASE/worker.sh" && chmod +x "$FILE"
+poweroff
 
+# now snapshotted:
 OPTS="-nic user,hostfwd=tcp::10022-:22,hostfwd=tcp::10080-:80,hostfwd=tcp::10059-:5900 -hda"
 qemu-system-x86_64 -cpu host -enable-kvm -display none -nodefaults -m 512 -snapshot $OPTS $HDD
 
 # de, en-US, en    // HTTP_ACCEPT_LANGUAGE
 # e.g.: vncviewer 127.0.0.1:10059 or e.g. xtightvncviewer -viewonly 127.0.0.1:10059
 ```
-
-foo:~# touch /etc/local.d/api.sh && chmod +x /etc/local.d/api.sh
-foo:~# cat  >/etc/local.d/api.sh <<EOF
-#!/bin/sh
-
-read _ QUERY _ && QUERY="\${QUERY#?}"
-printf '%s\n\n' 'HTTP/1.1 200 OK'
-
-case "\$QUERY" in
-	action=poweroff)
-		/root/worker.sh safe_poweroff
-	;;
-	action=reboot)
-		/root/worker.sh reboot >/dev/null 2>&1 & disown
-	;;
-	action=startssh)
-		/etc/init.d/dropbear restart
-	;;
-	action=startvnc)
-		pidof x11vnc >/dev/null || x11vnc -display :1 -cursor most -bg -nopw -xkb 2>/dev/null >/dev/null
-	;;
-	action=sysinfo)
-		uname -a && uptime && free
-		ps | while read -r LINE; do case "\$LINE" in *']') ;; *) printf '%s\n' "\$LINE" ;; esac; done
-	;;
-	action=report)
-		/root/worker.sh "\${QUERY#*=}"
-	;;
-	action=resetbrowser)
-		/root/worker.sh resetbrowser >/dev/null 2>&1 & disown
-	;;
-	language=*|screensize=*|screenshot*)
-		/root/worker.sh "\${QUERY%%=*}" "\${QUERY#*=}"
-	;;
-	loadurl=*)
-		pidof firefox >/dev/null || /root/worker.sh resetbrowser >/dev/null 2>&1 & disown
-		/root/worker.sh "\${QUERY%%=*}" "\${QUERY#*=}"
-	;;
-	*)
-		/root/worker.sh showusage "\$QUERY"
-	;;
-esac
-EOF
-foo:~# touch /root/worker.sh && chmod +x /root/worker.sh
-foo:~# cat  >/root/worker.sh <<EOF
-#!/bin/sh
-
-ACTION="\$1"
-ARG="\$2"
-
-export DISPLAY=:1
-read -r RESOLUTION 2>/dev/null </tmp/RESOLUTION || RESOLUTION=1920x1080
-
-resetbrowser()
-{
-	sysctl -qw vm.panic_on_oom=2
-	sysctl -qw kernel.panic_on_oops=1
-	sysctl -qw kernel.panic=10
-	sysctl -qw vm.min_free_kbytes=4096
-
-	while pidof firefox >/dev/null; do xdotool key ctrl+w; sleep 1; killall firefox; sleep 1; done
-
-	pidof Xvfb >/dev/null || nohup Xvfb \$DISPLAY -screen 0 \${RESOLUTION}x24+32 &
-
-	firefox --version >/tmp/BROWSER
-	nohup firefox >>/tmp/debug-firefox.1 2>>/tmp/debug-firefox.2 &
-	while ! ID="\$( xdotool search --classname Navigator )"; do sleep 1; done
-}
-
-press_enter_and_measure_time_till_network_relax_max10sec()
-{
-	local i j dev line old=
-	local bytes_dn bytes_dn_old diff_dn sum_dn
-	local bytes_up bytes_up_old diff_up sum_up
-	local up rest t0 t1 time list=
-
-	# e.g. default via 10.63.22.97 dev eth0 proto static metric 100
-	#                                  ^^^^
-	for dev in \$( ip route list exact '0.0.0.0/0' ); do test "\$old" = dev && break; old="\$dev"; done
-
-	byte_counter()
-	{
-		while read -r line; do {
-			case "\$line" in
-				*"\$1:"*)
-					# shellcheck disable=SC2086
-					set -- \${line#*:}
-
-					bytes_dn="\$1"
-					bytes_up="\$9"
-					return
-				;;
-			esac
-		} done </proc/net/dev
-	}
-	
-	# initial values for uptime:
-	read -r up rest </proc/uptime
-	t0="\${up%.*}\${up#*.}0"
-
-	# initial values for network:
-	byte_counter "\$dev"
-	bytes_dn_old="\$bytes_dn"	# our baseline
-	bytes_up_old="\$bytes_up"
-	sum_up="\$bytes_dn"
-	sum_dn="\$bytes_up"
-
-local bdn=0
-local bup=0
-	j=8	# consecutive measurepoints without traffic
-	i=100	# 100 x 0.1 sec = 10 sec maxtime
-
-	date +%s >/tmp/URL_START
-	xdotool key Return
-
-	while case "\$i" in 0) false ;; esac
-	do
-		i=\$(( i - 1 ))
-
-		read -r up rest </proc/uptime
-		t1="\${up%.*}\${up#*.}0"
-
-		byte_counter "\$dev"
-		diff_dn=\$(( bytes_dn - bytes_dn_old ))
-		diff_up=\$(( bytes_up - bytes_up_old ))
-		bytes_dn_old="\$bytes_dn"
-		bytes_up_old="\$bytes_up"
-# debug:
-		bdn=\$(( bdn + bytes_dn ))
-		bup=\$(( bdn + bytes_up ))
-
-		time="\$(( t1 - t0 ))"
-		list="\$list \$time,\$diff_dn,\$diff_up"
-
-		case "\$j-\$diff_dn-\$diff_up" in
-			0-0-0) break ;;
-			*-0-0) j=\$(( j - 1 )) ;;
-		esac
-
-		sleep 0.1
-	done
-
-	sum_dn=\$(( bytes_dn - sum_dn ))
-	sum_up=\$(( bytes_up - sum_up ))
-
-	export LIST="\$list"
-	echo "\$(( 100 - (i + 8) ))00" >/tmp/DOWNLOAD_TIME_MS
-	echo "\$sum_dn | \$bdn" >/tmp/DN
-	echo "\$sum_up | \$bup" >/tmp/UP
-}
-
-base64image()
-{
-	if test -s /tmp/screen.png; then
-		printf '%s' '"'
-		base64 -w0 /tmp/screen.png
-		printf '%s' '"'
-	else
-		echo 'null'
-	fi
-}
-
-get_url()
-{
-	xdotool key ctrl+l		# jump to url-bar
-	xdotool key ctrl+c
-	OUT="\$( xclip -out -selection 'clipboard' )"
-	xdotool key Escape
-	xdotool key Tab
-
-	printf '%s\n' "\$OUT"
-}
-
-case "\$ACTION" in
-	screenshot)
-		# GTmetrix.com
-		# call main with args + TODO: count bytes + streams + time + w3c validator? + effective URL + compression?
-		case "\$ARG" in
-			png) scrot --silent --overwrite /tmp/screen.png	            || echo "scrot-RC:\$?" ;;
-			  *) scrot --silent --overwrite /tmp/screen.jpg -quality 30 || echo "scrot-RC:\$?" ;;
-		esac
-	;;
-	report)
-#		cat <<EOF
-#{
-  "time_unix": "\$( cat /tmp/URL_START )",
-  "time_date": "\$( read -r UNIX </tmp/URL_START && LC_ALL=C date -d@\$UNIX && printf '%s' ' timezone ' && tail -n1 /etc/localtime )",
-  "url_userinput": "\$( cat /tmp/URL )",
-  "url_effective": "\$( get_url )",
-  "http_accept_language": "ToDo",
-  "user_agent": "ToDo",
-  "download_time_ms": "\$( cat /tmp/DOWNLOAD_TIME_MS )",
-  "download_size_bytes": "\$( cat /tmp/DOWNLOAD_BYTES )",
-  "network_action": "array",
-  "browser_version": "\$( cat /tmp/BROWSER )",
-  "resolution": "\$RESOLUTION",
-  "screenshot": \$( base64image )
-#}
-#EOF
-	;;
-	reboot)
-		sync && reboot -f
-	;;
-	safe_poweroff)
-		while pidof firefox >/dev/null; do xdotool key ctrl+w; sleep 1; killall firefox; sleep 1; done
-		poweroff
-	;;
-	resetbrowser)
-		resetbrowser
-	;;
-	language)
-		# about:config => intl.accept_languages
-	;;
-	screensize)
-		printf '%s\n' "\$ARG" >/tmp/RESOLUTION
-	;;
-	geturl)
-		geturl
-	;;
-	loadurl)
-		url_decode() {
-			local url="\$1"
-			local hex_encoded
-
-			tohex() { sed -E -e 's/\+/ /g' -e 's/%([0-9a-fA-F]{2})/\\\x\1/g'; }
-			hex_encoded="\$( printf '%s\n' "\$url" | tohex )"
-
-			printf '%b\n' "\$hex_encoded"
-		}
-
-		ID="\$( xdotool search --classname Navigator )" || resetbrowser
-		URL="\$( url_decode "\$ARG" )"
-		echo "\$URL" >/tmp/URL
-
-		# prepare:
-		xdotool windowsize "\$ID" \$X \$Y
-		xdotool key ctrl+t		# new tab
-		xdotool key ctrl+Page_Up	# go back to old tab
-		xdotool key ctrl+w		# close (old) tab
-		xdotool key ctrl+l		# jump to url-bar
-        	xdotool key BackSpace sleep 0.3	# make sure we start empty
-        	xdotool type --delay 300 "\$URL"
-
-		>/tmp/screen.png
-		press_enter_and_measure_time_till_network_relax_max10sec
-		echo "\$LIST"
-	;;
-	*)
-		printf '%s\n' "ERROR - detected: \${ARG:-<empty>} | KEY=\$ACTION VALUE=\$ARG"
-		printf '%s\n' ''
-		printf '%s\n' 'Usage: curl http://server/key=value'
-		printf '%s\n' ' e.g.: action=poweroff|reboot|startssh|startvnc|sysinfo|resetbrowser'
-		printf '%s\n' ''
-		printf '%s\n' '       language=zh-CN'
-		printf '%s\n' '       screensize=800x3000'
-		printf '%s\n' '       loadurl=https://amiunique.org/fp'
-		printf '%s\n' '       screenshot=png'
-		printf '%s\n' '       action=report'
-	;;
-esac
-EOF
-

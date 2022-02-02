@@ -28,7 +28,8 @@ resetbrowser()
 
         pidof Xvfb >/dev/null || nohup Xvfb $DISPLAY -screen 0 ${RESOLUTION}x24+32 &
 
-        firefox --version >/tmp/BROWSER
+        firefox --version >/tmp/BROWSER || return 1
+
         nohup firefox >>/tmp/debug-firefox.1 2>>/tmp/debug-firefox.2 &
 
 	# wait till really ready:
