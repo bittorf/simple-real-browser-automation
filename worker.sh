@@ -168,7 +168,7 @@ case "$ACTION" in
 					set -- $LINE
 					shift
 
-					printf '%s\n' "$*" >/tmp/UA
+					printf '%s\n' "$*" | tr -d '\r' >/tmp/UA
 					I=$(( I - 1 ))
 					test $I -eq 0 && exit
 				;;
@@ -176,7 +176,7 @@ case "$ACTION" in
 					set -- $LINE
 					shift
 
-					printf '%s\n' "$*" >/tmp/ACCEPT_LANG
+					printf '%s\n' "$*" | tr -d '\r' >/tmp/ACCEPT_LANG
 					I=$(( I - 1 ))
 					test $I -eq 0 && exit
 				;;
