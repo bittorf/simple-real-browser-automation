@@ -21,7 +21,6 @@ outputs a JSON like:
   "network_public_ip": "185.97.181.129",
   "network_country": "Germany",
   "network_action": [
-  "browser_version": "Mozilla Firefox 78.3.0esr",
     {"tims_ms":   20, "bytes_down":      0, "bytes_up":      0},
     {"tims_ms":  130, "bytes_down":   2076, "bytes_up":   9555},
     {"tims_ms":  230, "bytes_down":   6802, "bytes_up":   2128},
