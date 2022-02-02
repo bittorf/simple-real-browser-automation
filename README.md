@@ -11,11 +11,11 @@ outputs a JSON like:
 ```
 {
   "time_unix": 1643808355,
-  "time_date": "Wed Feb  2 14:25:55 CET 2022 timezone CET-1CEST,M3.5.0,M10.5.0/3",
+  "time_date": "Wed Feb  2 14:25:55 CET 2022 CET-1CEST,M3.5.0,M10.5.0/3",
   "url_userinput": "http://c64.de",
   "url_effective": "https://icomp.de/shop-icomp/en/news.html",
   "http_accept_language": "en-US,en;q=0.5",
-  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36",
+  "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8)",
   "download_time_ms": 2380,
   "download_size_bytes": 510237,
   "network_public_ip": "185.97.181.129",
@@ -48,7 +48,7 @@ outputs a JSON like:
   "resolution": "1280x720",
   "screenshot_size": 37744,
   "screenshot_format": "jpg",
-  "screenshot": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDACAWGBwYFCAcGhwkIiAmMFA0MCwsMGJGSjpQdG....."
+  "screenshot": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDACAWGBwYFC....."
 }
 ```
 

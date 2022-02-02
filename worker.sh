@@ -230,7 +230,7 @@ case "$ACTION" in
 		cat <<EOF
 {
   "time_unix": $( cat /tmp/URL_START ),
-  "time_date": "$DATE timezone $( tail -n1 /etc/localtime )",
+  "time_date": "$DATE $( tail -n1 /etc/localtime )",
   "url_userinput": "$( cat /tmp/URL )",
   "url_effective": "$( get_url )",
   "http_accept_language": "$( cat /tmp/ACCEPT_LANG )",
