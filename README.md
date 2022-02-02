@@ -48,7 +48,7 @@ outputs a JSON like:
   "resolution": "1280x720",
   "screenshot_size": 37744,
   "screenshot_format": "jpg",
-  "screenshot": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDACAWGBwYFC....."
+  "screenshot_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDACAWC....."
 }
 ```
 
