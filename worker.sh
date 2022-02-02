@@ -54,6 +54,8 @@ resetbrowser()
 		type_url_into_bar 'http://127.0.0.1:8080'
 		xdotool key Return
 	} done
+
+	pid_exists "$pid" && kill "$pid"
 }
 
 press_enter_and_measure_time_till_network_relax_max10sec()
