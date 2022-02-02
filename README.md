@@ -1,12 +1,14 @@
 ### Usage
 
+```
 ./boot-vm.sh
 
 curl "http://127.0.0.1:10080/help
 curl "http://127.0.0.1:10080/loadurl=http://c64.de"
 curl "http://127.0.0.1:10080/screenshot=jpg"
 curl "http://127.0.0.1:10080/action=report"
-
+```
+outputs:
 ```
 {
   "time_unix": 1643808355,
