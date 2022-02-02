@@ -1,14 +1,13 @@
 ### Usage
 
 ```
-./boot-vm.sh
+./boot-vm.sh	# needs ~5 sec till port 10080 is yours!
 
-curl "http://127.0.0.1:10080/help
 curl "http://127.0.0.1:10080/loadurl=http://c64.de"
 curl "http://127.0.0.1:10080/screenshot=jpg"
 curl "http://127.0.0.1:10080/action=report"
 ```
-outputs:
+outputs a JSON like:
 ```
 {
   "time_unix": 1643808355,
@@ -52,6 +51,11 @@ outputs:
   "screenshot_format": "jpg",
   "screenshot": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDACAWGBwYFCAcGhwkIiAmMFA0MCwsMGJGSjpQdG....."
 }
+```
+
+there is more help:
+```
+curl "http://127.0.0.1:10080/help
 ```
 
 ### Setup
