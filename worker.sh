@@ -1,7 +1,13 @@
 #!/bin/sh
 
 ACTION="$1"
-ARG="$2"
+
+case "$ACTION" in
+	*'='*)
+		ARG="${ACTION#*=}"
+		ACTION="${ACTION%%=*}"
+	;;
+esac
 
 export DISPLAY=:1
 read -r RESOLUTION 2>/dev/null </tmp/RESOLUTION || RESOLUTION=1280x720
@@ -356,12 +362,13 @@ EOF
                 printf '%s\n' "ERROR - detected: ${ARG:-<empty>} | KEY=$ACTION VALUE=$ARG"
                 printf '%s\n' ''
                 printf '%s\n' 'Usage: curl http://server/key=value'
-                printf '%s\n' ' e.g.: action=poweroff|reboot|startssh|startvnc|sysinfo|resetbrowser|update'
+                printf '%s\n' ' e.g.: action=poweroff|reboot|startssh|startvnc|sysinfo|resetbrowser'
                 printf '%s\n' ''
                 printf '%s\n' '       language=zh-CN'
                 printf '%s\n' '       screensize=800x3000'
                 printf '%s\n' '       loadurl=https://amiunique.org/fp'
                 printf '%s\n' '       screenshot=png'
                 printf '%s\n' '       action=report'
+		printf '%s\n' '       update'
         ;;
 esac

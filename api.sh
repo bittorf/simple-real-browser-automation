@@ -23,17 +23,17 @@ case "$QUERY" in
                 ps | while read -r LINE; do case "$LINE" in *']') ;; *) printf '%s\n' "$LINE" ;; esac; done
         ;;
         action=report)
-                /root/worker.sh "${QUERY#*=}"
+                /root/worker.sh "$QUERY"
         ;;
         action=resetbrowser)
                 /root/worker.sh resetbrowser >/dev/null 2>&1 & disown
         ;;
         language=*|screensize=*|screenshot*|update*)
-                /root/worker.sh "${QUERY%%=*}" "${QUERY#*=}"
+                /root/worker.sh "$QUERY"
         ;;
         loadurl=*)
                 pidof firefox >/dev/null || /root/worker.sh resetbrowser >/dev/null 2>&1 & disown
-                /root/worker.sh "${QUERY%%=*}" "${QUERY#*=}"
+                /root/worker.sh "$QUERY"
         ;;
         *)
                 /root/worker.sh showusage "$QUERY"
