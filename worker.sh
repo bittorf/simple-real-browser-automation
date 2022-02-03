@@ -387,29 +387,31 @@ EOF
 {
   "status": "fail",
   "data": {
-    "input":          "${QUERY:-<empty>}",
-    "detected_key":   "${ACTION:-<empty>}",
+    "input         ": "${QUERY:-<empty>}",
+    "detected_key  ": "${ACTION:-<empty>}",
     "detected_value": "${ARG:-<empty>}",
 
-    "usage":          "curl http://server/key=value",
+    "usage   ":       "curl http://server/key=value",
 
-    "example1":       "curl http://server/loadurl=google.de",
-    "example2":       "curl http://server/screenshot=jpg",
-    "example3":       "curl http://server/action=report",
+    "example1":       "                   loadurl=google.de",
+    "example2":       "                   screenshot=jpg",
+    "example3":       "                   action=report",
 
-    "example4":       "curl http://server/language=zh-CN",
-    "example5":       "curl http://server/useragent=Mozilla/5.0 (linux)",
-    "example6":       "curl http://server/screensize=800x3000",
-    "example7":       "curl http://server/action=resetbrowser",
+    "example4":       "                   language=zh-CN",
+    "example5":       "                   useragent=Mozilla/5.0 (linux)",
+    "example6":       "                   screensize=800x3000",
+    "example7":       "                   action=resetbrowser",
 
-    "example8":       "curl http://server/action=update",
-    "example9":       "curl http://server/action=poweroff",
-    "exampleA":       "curl http://server/action=reboot",
-    "exampleB":       "curl http://server/action=startssh",
-    "exampleC":       "curl http://server/action=startvnc",
-    "exampleD":       "curl http://server/action=sysinfo"
+    "example8":       "                   action=update",
+    "example9":       "                   action=poweroff",
+    "exampleA":       "                   action=reboot",
+    "exampleB":       "                   action=startssh",
+    "exampleC":       "                   action=startvnc",
+    "exampleD":       "                   action=sysinfo"
   }
 }
 EOF
+	;;
+esac
 
 }
