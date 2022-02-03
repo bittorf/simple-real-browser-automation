@@ -215,6 +215,19 @@ replace()
 
 case "$ACTION" in
 	json_emit)
+		case "$INPUT" in
+			0)
+				INPUT='status'
+				OPTION="$ARG"
+				ARG='success'
+			;;
+			[1-9]|[1-9][0-9]|1[0-9][0-9])	# number > 0
+				INPUT='status'
+				OPTION="$ARG"
+				ARG='error'
+			;;
+		esac
+
 		json_emit "$INPUT" "$ARG" "$OPTION"
 	;;
 	startvnc)
