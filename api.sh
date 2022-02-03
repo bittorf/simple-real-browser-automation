@@ -19,7 +19,7 @@ case "$QUERY" in
         ;;
         language=*|screensize=*|screenshot*|update|action=update|useragent=*|action=poweroff|action=startvnc|action=report)
                 /root/worker.sh "$QUERY"
-		case "$QUERY" in action=report) ;; *) /root/worker.sh json_emit "$?" "$QUERY" ;; esac
+		case "$QUERY" in action=report|action=startvnc) ;; *) /root/worker.sh json_emit "$?" "$QUERY" ;; esac
         ;;
         loadurl=*)
                 pidof firefox >/dev/null || /root/worker.sh 'resetbrowser' >/dev/null 2>&1 & disown

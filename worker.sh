@@ -408,7 +408,6 @@ EOF
 		type_url_into_bar "$URL"
 
 		press_enter_and_measure_time_till_traffic_relaxes
-		json_emit 'status' 'success'
         ;;
         *)
 		cat <<EOF
