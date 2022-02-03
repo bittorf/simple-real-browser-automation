@@ -419,7 +419,9 @@ EOF
     "exampleA":       "                   action=reboot",
     "exampleB":       "                   action=startssh",
     "exampleC":       "                   action=startvnc",
-    "exampleD":       "                   action=sysinfo"
+    "exampleD":       "                   action=sysinfo",
+
+    "see": "https://github.com/bittorf/simple-real-browser-automation"
   }
 }
 EOF
