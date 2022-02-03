@@ -215,7 +215,7 @@ replace()
 
 case "$ACTION" in
 	json_emit)
-		case "$INPUT" in
+		case "$ARG" in
 			0)
 				INPUT='status'
 				OPTION="$ARG"
