@@ -380,20 +380,36 @@ EOF
 		type_url_into_bar "$URL"
 
 		press_enter_and_measure_time_till_traffic_relaxes
+		json_emit 'status' 'success'
         ;;
         *)
-                printf '%s\n' "ERROR - detected: ${ARG:-<empty>} | KEY=$ACTION VALUE=$ARG"
-                printf '%s\n' ''
-                printf '%s\n' 'Usage: curl http://server/key=value'
-                printf '%s\n' ' e.g.: action=poweroff|reboot|startssh|startvnc|sysinfo|resetbrowser'
-                printf '%s\n' ''
-                printf '%s\n' '       language=zh-CN'
-                printf '%s\n' '       screensize=800x3000'
-                printf '%s\n' '       loadurl=https://amiunique.org/fp'
-                printf '%s\n' '       screenshot=png'
-                printf '%s\n' '       action=report'
-		printf '%s\n' '       update'
-        ;;
-esac
+		cat <<EOF
+{
+  "status": "fail",
+  "data": {
+    "input":          "${QUERY:-<empty>}",
+    "detected_key":   "${ACTION:-<empty>}",
+    "detected_value": "${ARG:-<empty>}",
+
+    "usage":          "curl http://server/key=value",
+
+    "example1":       "curl http://server/loadurl=google.de",
+    "example2":       "curl http://server/screenshot=jpg",
+    "example3":       "curl http://server/action=report",
+
+    "example4":       "curl http://server/language=zh-CN",
+    "example5":       "curl http://server/useragent=Mozilla/5.0 (linux)",
+    "example6":       "curl http://server/screensize=800x3000",
+    "example7":       "curl http://server/action=resetbrowser",
+
+    "example8":       "curl http://server/action=update",
+    "example9":       "curl http://server/action=poweroff",
+    "exampleA":       "curl http://server/action=reboot",
+    "exampleB":       "curl http://server/action=startssh",
+    "exampleC":       "curl http://server/action=startvnc",
+    "exampleD":       "curl http://server/action=sysinfo"
+  }
+}
+EOF
 
 }
