@@ -6,6 +6,11 @@ ARG="$2"
 export DISPLAY=:1
 read -r RESOLUTION 2>/dev/null </tmp/RESOLUTION || RESOLUTION=1280x720
 
+json_emit()
+{
+	printf '%s\n' "{\"$1\": \"$2\"}"
+}
+
 browser_stop()
 {
 	while pidof firefox >/dev/null; do
@@ -64,6 +69,11 @@ press_enter_and_measure_time_till_network_relax_max10sec()
         local bytes_dn bytes_dn_old diff_dn sum_dn
         local bytes_up bytes_up_old diff_up sum_up
         local up rest t0 t1 time time_ready list=
+
+	true >/tmp/NETWORK_ACTION
+	true >/tmp/DOWNLOAD_TIME_MS
+	true >/tmp/DOWNLOAD_BYTES
+	true >/tmp/UPLOAD_BYTES
 
         # e.g. default via 10.63.22.97 dev eth0 proto static metric 100
         #                                  ^^^^
@@ -227,8 +237,10 @@ case "$ACTION" in
 		# TODO: mimeheader and filename
 		# jq -r .screenshot | base64 -d
 
-		cat <<EOF
+		if test -s /tmp/NETWORK_ACTION; then
+			cat <<EOF
 {
+  "status": "success",
   "time_unix": $( cat /tmp/URL_START ),
   "time_date": "$DATE $( tail -n1 /etc/localtime )",
   "url_userinput": "$( cat /tmp/URL )",
@@ -260,6 +272,9 @@ $(
   "screenshot_base64": ${BASE64:+\"}${BASE64:-null}${BASE64:+\"}
 }
 EOF
+		else
+			json_emit 'status' 'error'	# https://github.com/omniti-labs/jsend
+		fi
         ;;
         reboot)
                 sync && reboot -f
