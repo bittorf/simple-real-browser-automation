@@ -81,9 +81,11 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
 	pid_exists "$pid" && kill "$pid"
 }
 
-press_enter_and_measure_time_till_network_relax_max10sec()
+press_enter_and_measure_time_till_traffic_relaxes()
 {
-        local i j dev line old=
+        local j=20		# consecutive measurepoints without traffic = 2 sec
+        local i=150		# 150 x 0.1 sec = 10 sec max runtime
+        local dev line old=
         local bytes_dn bytes_dn_old diff_dn sum_dn
         local bytes_up bytes_up_old diff_up sum_up
         local up rest t0 t1 time time_ready list=
@@ -123,9 +125,6 @@ press_enter_and_measure_time_till_network_relax_max10sec()
         bytes_up_old="$bytes_up"
         sum_dn="$bytes_dn"
         sum_up="$bytes_up"
-
-        j=8     # consecutive measurepoints without traffic
-        i=100   # 100 x 0.1 sec = 10 sec maxtime
 
         date +%s >/tmp/URL_START
         xdotool key Return
@@ -379,7 +378,7 @@ EOF
                 xdotool windowsize "$ID" "$X" "$Y"	# resize to fit screen
 		type_url_into_bar "$URL"
 
-                press_enter_and_measure_time_till_network_relax_max10sec
+		press_enter_and_measure_time_till_traffic_relaxes
         ;;
         *)
                 printf '%s\n' "ERROR - detected: ${ARG:-<empty>} | KEY=$ACTION VALUE=$ARG"
