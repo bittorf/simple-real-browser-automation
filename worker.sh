@@ -45,6 +45,11 @@ pid_exists()
 	kill -0 "${1:-foo}" 2>/dev/null
 }
 
+useragent_set()
+{
+	echo "$1" >/tmp/UA_ENFORCED
+}
+
 resetbrowser()		# TODO: clear cache + set lang + set UA
 {
 	local pid=
@@ -79,6 +84,16 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
 	} done
 
 	pid_exists "$pid" && kill "$pid"
+}
+
+url_decode() {
+	local url="$1"
+	local hex_encoded
+
+	tohex() { sed -E -e 's/\+/ /g' -e 's/%([0-9a-fA-F]{2})/\\x\1/g'; }
+	hex_encoded="$( printf '%s\n' "$url" | tohex )"
+
+	printf '%b\n' "$hex_encoded"
 }
 
 press_enter_and_measure_time_till_traffic_relaxes()
@@ -205,6 +220,11 @@ case "$ACTION" in
 		replace '/root/worker.sh'     "$BASE/worker.sh" || RC='error'
 
 		json_emit 'status' "$RC"
+	;;
+	useragent)
+		PLAIN="$( url_decode "$ARG" )"
+		useragent_set "$PLAIN"
+		json_emit 'status' 'success' "UA set: '$PLAIN'"
 	;;
 	detect_headers)
 		printf '%s\n\n' 'HTTP/1.1 200 OK'
@@ -354,16 +374,6 @@ EOF
 		true >/tmp/screen.base64
 		true >/tmp/screen.size
 		true >/tmp/screen.format
-
-                url_decode() {
-                        local url="$1"
-                        local hex_encoded
-
-                        tohex() { sed -E -e 's/\+/ /g' -e 's/%([0-9a-fA-F]{2})/\\x\1/g'; }
-                        hex_encoded="$( printf '%s\n' "$url" | tohex )"
-
-                        printf '%b\n' "$hex_encoded"
-                }
 
 		X=${RESOLUTION%.*}
 		Y=${RESOLUTION#*.}
