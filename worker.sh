@@ -3,6 +3,9 @@
 ACTION="$1"
 
 case "$ACTION" in
+	action=*)
+		ACTION="${ACTION#*=}"	# action=foo => foo
+	;;
 	*'='*)
 		ARG="${ACTION#*=}"	# foo=bar => bar
 		ACTION="${ACTION%%=*}"	# foo=bar => foo
@@ -324,7 +327,7 @@ EOF
         reboot)
                 sync && reboot -f
         ;;
-        safe_poweroff)
+        poweroff)
 		browser_stop
                 poweroff
         ;;

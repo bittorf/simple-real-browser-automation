@@ -5,10 +5,10 @@ printf '%s\n\n' 'HTTP/1.1 200 OK'
 
 case "$QUERY" in
         action=poweroff)
-                /root/worker.sh safe_poweroff
+                /root/worker.sh "$QUERY"
         ;;
         action=reboot)
-                /root/worker.sh reboot >/dev/null 2>&1 & disown
+                /root/worker.sh "$QUERY" >/dev/null 2>&1 & disown
         ;;
         action=startssh)
                 /etc/init.d/dropbear restart
@@ -26,7 +26,7 @@ case "$QUERY" in
                 /root/worker.sh "$QUERY"
         ;;
         action=resetbrowser)
-                /root/worker.sh resetbrowser >/dev/null 2>&1 & disown
+                /root/worker.sh "$QUERY" >/dev/null 2>&1 & disown
         ;;
         language=*|screensize=*|screenshot*|update*)
                 /root/worker.sh "$QUERY"
