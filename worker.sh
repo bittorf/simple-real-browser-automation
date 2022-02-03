@@ -218,12 +218,10 @@ case "$ACTION" in
 		case "$ARG" in
 			0)
 				INPUT='status'
-				OPTION="$ARG"
 				ARG='success'
 			;;
-			[1-9]|[1-9][0-9]|1[0-9][0-9])	# number > 0
+			[1-9]|[1-9][0-9]|1[0-9][0-9])	# a returncode/number > 0
 				INPUT='status'
-				OPTION="$ARG"
 				ARG='error'
 			;;
 		esac
