@@ -49,7 +49,7 @@ pid_exists()
 
 useragent_set()
 {
-	echo "$1" >/tmp/UA_ENFORCED
+	echo "$1" >/tmp/UA_USERWISH
 }
 
 resetbrowser()		# TODO: clear cache + set lang + set UA
@@ -226,7 +226,7 @@ case "$ACTION" in
 	useragent)
 		PLAIN="$( url_decode "$ARG" )"
 		useragent_set "$PLAIN"
-		json_emit 'status' 'success' "UA set: '$PLAIN'"
+		json_emit 'status' 'success' "set UserAgent to: '$PLAIN'"
 	;;
 	detect_headers)
 		printf '%s\n\n' 'HTTP/1.1 200 OK'
