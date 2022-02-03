@@ -239,7 +239,12 @@ case "$ACTION" in
 		true >/tmp/screen.size
 		true >/tmp/screen.format
 
+		test -s /tmp/NETWORK_ACTION || ARG=err
+
                 case "$ARG" in
+			err)
+				json_emit 'status' 'error' 'no URL loaded yet?'
+			;;
                         png)
 				if scrot --silent --overwrite /tmp/screen.png; then
 					echo 'png'                 >/tmp/screen.format
@@ -313,7 +318,7 @@ $(
 }
 EOF
 		else
-			json_emit 'status' 'error'
+			json_emit 'status' 'error' 'no URL loaded yet?'
 		fi
         ;;
         reboot)
