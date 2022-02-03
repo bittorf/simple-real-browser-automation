@@ -6,8 +6,8 @@ printf '%s\n\n' 'HTTP/1.1 200 OK'
 
 case "$QUERY" in
         action=startssh)
-		/etc/init.d/dropbear restart
-		/root/worker.sh json_emit "$?"
+		/etc/init.d/dropbear restart >/dev/null
+		/root/worker.sh json_emit "$?" "$QUERY"
         ;;
         action=sysinfo)
                 uname -a && uptime && free	# TODO: json
