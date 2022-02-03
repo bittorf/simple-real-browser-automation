@@ -14,7 +14,15 @@ read -r RESOLUTION 2>/dev/null </tmp/RESOLUTION || RESOLUTION=1280x720
 
 json_emit()
 {
-	printf '%s\n' "{\"$1\": \"$2\"}"
+	local key="$1"
+	local value="$2"
+	local message="$3"
+
+	# https://github.com/omniti-labs/jsend
+	case "$message" in
+		'') printf '%s\n' "{\"$key\": \"$value\"}" ;;
+		 *) printf '%s\n' "{\"$key\": \"$value\", \"data\": {\"message\": \"$message\"}}" ;;
+	esac
 }
 
 browser_stop()
@@ -237,8 +245,10 @@ case "$ACTION" in
 					echo 'png'                 >/tmp/screen.format
 					wc -c </tmp/screen.png     >/tmp/screen.size
 					base64 -w0 /tmp/screen.png >/tmp/screen.base64 && echo >>/tmp/screen.base64
+
+					json_emit 'status' 'success'
 				else
-					echo "scrot-RC:$?"
+					json_emit 'status' 'error' "scrot-RC:$?"
 				fi
 			;;
                         *)
@@ -246,8 +256,10 @@ case "$ACTION" in
 					echo 'jpg'                 >/tmp/screen.format
 					wc -c </tmp/screen.jpg     >/tmp/screen.size
 					base64 -w0 /tmp/screen.jpg >/tmp/screen.base64 && echo >>/tmp/screen.base64
+
+					json_emit 'status' 'success'
 				else
-					echo "scrot-RC:$?"
+					json_emit 'status' 'error' "scrot-RC:$?"
 				fi
 			;;
                 esac
@@ -301,7 +313,7 @@ $(
 }
 EOF
 		else
-			json_emit 'status' 'error'	# https://github.com/omniti-labs/jsend
+			json_emit 'status' 'error'
 		fi
         ;;
         reboot)
