@@ -244,16 +244,14 @@ case "$ACTION" in
 	update)
 		BASE="${ARG:-https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main}"
 
-		RC='success'
-		replace '/etc/local.d/api.sh' "$BASE/api.sh"    || RC='error'
-		replace '/root/worker.sh'     "$BASE/worker.sh" || RC='error'
-
-		json_emit 'status' "$RC"
+		RC=0
+		replace '/etc/local.d/api.sh' "$BASE/api.sh"    || RC=1
+		replace '/root/worker.sh'     "$BASE/worker.sh" || RC=2
+		exit $RC
 	;;
 	useragent)
 		PLAIN="$( url_decode "$ARG" )"
 		useragent_set "$PLAIN"
-		json_emit 'status' 'success' "set UserAgent to: '$PLAIN'"
 	;;
 	detect_headers)
 		printf '%s\n\n' 'HTTP/1.1 200 OK'
@@ -293,21 +291,16 @@ case "$ACTION" in
 		true >/tmp/screen.size
 		true >/tmp/screen.format
 
-		test -s /tmp/NETWORK_ACTION || ARG=err
+		test -s /tmp/NETWORK_ACTION || exit 1
 
                 case "$ARG" in
-			err)
-				json_emit 'status' 'error' 'no URL loaded yet?'
-			;;
                         png)
 				if scrot --silent --overwrite /tmp/screen.png; then
 					echo 'png'                 >/tmp/screen.format
 					wc -c </tmp/screen.png     >/tmp/screen.size
 					base64 -w0 /tmp/screen.png >/tmp/screen.base64 && echo >>/tmp/screen.base64
-
-					json_emit 'status' 'success'
 				else
-					json_emit 'status' 'error' "scrot-RC:$?"
+					exit $?
 				fi
 			;;
                         *)
@@ -315,10 +308,8 @@ case "$ACTION" in
 					echo 'jpg'                 >/tmp/screen.format
 					wc -c </tmp/screen.jpg     >/tmp/screen.size
 					base64 -w0 /tmp/screen.jpg >/tmp/screen.base64 && echo >>/tmp/screen.base64
-
-					json_emit 'status' 'success'
 				else
-					json_emit 'status' 'error' "scrot-RC:$?"
+					exit $?
 				fi
 			;;
                 esac
