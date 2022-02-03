@@ -1,9 +1,9 @@
 #!/bin/sh
 {
 
-INPUT="$1"
+INPUT="$1" && ACTION="$INPUT"
 ARG="$2"
-ACTION="$INPUT"
+OPTION="$3"
 
 case "$ACTION" in
 	action=*)
@@ -214,6 +214,20 @@ replace()
 }
 
 case "$ACTION" in
+	json_emit)
+		json_emit "$INPUT" "$ARG" "$OPTION"
+	;;
+	startvnc)
+		if pidof x11vnc >/dev/null; then
+			json_emit 'status' 'success' 'x11vnc already running'
+		else
+			if x11vnc -display :1 -cursor most -bg -nopw -xkb 2>/dev/null >/dev/null; then
+				json_emit 'status' 'success' 'x11vnc started'
+			else
+				json_emit 'status' 'error' "x11vnc did not started RC:$?"
+			fi
+		fi
+	;;
 	update)
 		BASE="${ARG:-https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main}"
 

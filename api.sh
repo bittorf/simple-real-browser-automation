@@ -5,39 +5,25 @@ read _ QUERY _ && QUERY="${QUERY#?}"
 printf '%s\n\n' 'HTTP/1.1 200 OK'
 
 case "$QUERY" in
-        action=poweroff)
-                /root/worker.sh "$QUERY"
-        ;;
-        action=reboot)
-                /root/worker.sh "$QUERY" >/dev/null 2>&1 & disown
-        ;;
         action=startssh)
                 /etc/init.d/dropbear restart
-        ;;
-        action=startvnc)
-                pidof x11vnc >/dev/null || {
-			x11vnc -display :1 -cursor most -bg -nopw -xkb 2>/dev/null >/dev/null || echo ERR:$?
-		}
         ;;
         action=sysinfo)
                 uname -a && uptime && free
                 ps | while read -r LINE; do case "$LINE" in *']') ;; *) printf '%s\n' "$LINE" ;; esac; done
         ;;
-        action=report)
-                /root/worker.sh "$QUERY"
-        ;;
-        action=resetbrowser)
+        action=resetbrowser|action=reboot)
                 /root/worker.sh "$QUERY" >/dev/null 2>&1 & disown
         ;;
-        language=*|screensize=*|screenshot*|update*|useragent=*)
+        language=*|screensize=*|screenshot*|update|action=update|useragent=*|action=poweroff|action=startvnc|action=report)
                 /root/worker.sh "$QUERY"
         ;;
         loadurl=*)
-                pidof firefox >/dev/null || /root/worker.sh resetbrowser >/dev/null 2>&1 & disown
+                pidof firefox >/dev/null || /root/worker.sh 'resetbrowser' >/dev/null 2>&1 & disown
                 /root/worker.sh "$QUERY"
         ;;
         *)
-                /root/worker.sh showusage "$QUERY"
+                /root/worker.sh 'showusage' "$QUERY"
         ;;
 esac
 
