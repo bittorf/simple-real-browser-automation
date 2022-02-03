@@ -4,8 +4,8 @@ ACTION="$1"
 
 case "$ACTION" in
 	*'='*)
-		ARG="${ACTION#*=}"
-		ACTION="${ACTION%%=*}"
+		ARG="${ACTION#*=}"	# foo=bar => bar
+		ACTION="${ACTION%%=*}"	# foo=bar => foo
 	;;
 esac
 
