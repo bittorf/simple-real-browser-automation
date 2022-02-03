@@ -1,7 +1,9 @@
 #!/bin/sh
 {
 
-ACTION="$1"
+INPUT="$1"
+ARG="$2"
+ACTION="$INPUT"
 
 case "$ACTION" in
 	action=*)
@@ -397,7 +399,7 @@ EOF
 {
   "status": "fail",
   "data": {
-    "input         ": "${QUERY:-<empty>}",
+    "input         ": "${INPUT:-<empty>}",
     "detected_key  ": "${ACTION:-<empty>}",
     "detected_value": "${ARG:-<empty>}",
 
