@@ -1,4 +1,5 @@
 #!/bin/sh
+{
 
 read _ QUERY _ && QUERY="${QUERY#?}"
 printf '%s\n\n' 'HTTP/1.1 200 OK'
@@ -39,3 +40,5 @@ case "$QUERY" in
                 /root/worker.sh showusage "$QUERY"
         ;;
 esac
+
+}

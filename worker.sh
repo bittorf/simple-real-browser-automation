@@ -1,4 +1,5 @@
 #!/bin/sh
+{
 
 ACTION="$1"
 
@@ -392,3 +393,5 @@ EOF
 		printf '%s\n' '       update'
         ;;
 esac
+
+}
