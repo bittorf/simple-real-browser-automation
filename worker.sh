@@ -27,7 +27,7 @@ pid_exists()
 	kill -0 "${1:-foo}" 2>/dev/null
 }
 
-resetbrowser()
+resetbrowser()		# TODO: clear cache + set lang + set UA
 {
 	local pid=
 
@@ -166,7 +166,29 @@ type_url_into_bar()
 	xdotool type --delay 300 "$url "	# append a space
 }
 
+replace()
+{
+	local dest="$1"
+	local url="$2"
+
+	wget -qO /tmp/new.sh "$url"	|| return 1
+	test -s  /tmp/new.sh		|| return 1
+	sh -n    /tmp/new.sh		|| return 1
+	cp       /tmp/new.sh "$dest"	|| return 1
+	chmod +x             "$dest"	|| return 1
+	rm -f    /tmp/new.sh
+}
+
 case "$ACTION" in
+	update)
+		BASE="${ARG:-https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main}"
+
+		RC='success'
+		replace '/etc/local.d/api.sh' "$BASE/api.sh"    || RC='error'
+		replace '/root/worker.sh'     "$BASE/worker.sh" || RC='error'
+
+		json_emit 'status' "$RC"
+	;;
 	detect_headers)
 		printf '%s\n\n' 'HTTP/1.1 200 OK'
 		printf '%s' 'OK'
@@ -334,7 +356,7 @@ EOF
                 printf '%s\n' "ERROR - detected: ${ARG:-<empty>} | KEY=$ACTION VALUE=$ARG"
                 printf '%s\n' ''
                 printf '%s\n' 'Usage: curl http://server/key=value'
-                printf '%s\n' ' e.g.: action=poweroff|reboot|startssh|startvnc|sysinfo|resetbrowser'
+                printf '%s\n' ' e.g.: action=poweroff|reboot|startssh|startvnc|sysinfo|resetbrowser|update'
                 printf '%s\n' ''
                 printf '%s\n' '       language=zh-CN'
                 printf '%s\n' '       screensize=800x3000'

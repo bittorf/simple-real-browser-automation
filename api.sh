@@ -28,7 +28,7 @@ case "$QUERY" in
         action=resetbrowser)
                 /root/worker.sh resetbrowser >/dev/null 2>&1 & disown
         ;;
-        language=*|screensize=*|screenshot*)
+        language=*|screensize=*|screenshot*|update*)
                 /root/worker.sh "${QUERY%%=*}" "${QUERY#*=}"
         ;;
         loadurl=*)
