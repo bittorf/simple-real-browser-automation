@@ -70,7 +70,7 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
 	true >/tmp/ACCEPT_LANG
 	while ! test -s /tmp/UA; do {
 		pid_exists "$pid" || {
-			nc -l -p 8080 -e $0 detect_headers &
+			nc -l -p 8080 -e "$0" detect_headers &
 			pid=$!
 		}
 
@@ -215,6 +215,7 @@ case "$ACTION" in
 		while read -r LINE; do {
 			case "$LINE" in
 				'User-Agent:'*)
+					# shellcheck disable=SC2086
 					set -- $LINE
 					shift
 
@@ -223,6 +224,7 @@ case "$ACTION" in
 					test $I -eq 0 && exit
 				;;
 				'Accept-Language:'*)
+					# shellcheck disable=SC2086
 					set -- $LINE
 					shift
 
