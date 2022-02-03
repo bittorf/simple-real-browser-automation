@@ -319,7 +319,8 @@ $(
   "resolution": "$RESOLUTION",
   "screenshot_size": ${SIZE:-null},
   "screenshot_format": ${FORMAT:+\"}${FORMAT:-null}${FORMAT:+\"},
-  "screenshot_base64": ${BASE64:+\"}${BASE64:-null}${BASE64:+\"}
+  "screenshot_base64": ${BASE64:+\"}${BASE64:-null}${BASE64:+\"},
+  "script": "https://github.com/bittorf/simple-real-browser-automation"
 }
 EOF
 		else

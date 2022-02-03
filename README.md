@@ -10,6 +10,7 @@ curl "http://127.0.0.1:10080/action=report"
 outputs a JSON like:
 ```
 {
+  "status": "success",
   "time_unix": 1643808355,
   "time_date": "Wed Feb  2 14:25:55 CET 2022 CET-1CEST,M3.5.0,M10.5.0/3",
   "url_userinput": "http://c64.de",
