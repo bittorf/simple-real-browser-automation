@@ -181,18 +181,17 @@ get_url()
 {
 	local clipboard=
 
-	while test -z "$clipboard"; do {
-		xdotool key ctrl+l              # jump to url-bar
+	xdotool key ctrl+l              # jump to url-bar
 
-		printf '%s' | xclip -selection 'clipboard'	# clear
-		xdotool key ctrl+c
-		clipboard="$( xclip -out -selection 'clipboard' )"
+	printf '%s' | xclip -selection 'clipboard'	# clear
+	xdotool key ctrl+c
+	clipboard="$( xclip -out -selection 'clipboard' )"
 
-		xdotool key Escape
-		xdotool key Tab
-	} done
+	xdotool key Escape
+	xdotool key Tab
 
 	printf '%s\n' "$clipboard"
+	test -n "$clipboard"
 }
 
 type_url_into_bar()
@@ -339,7 +338,7 @@ case "$ACTION" in
   "time_unix": $( cat /tmp/URL_START ),
   "time_date": "$DATE $( tail -n1 /etc/localtime )",
   "url_userinput": "$( cat /tmp/URL )",
-  "url_effective": "$( get_url )",
+  "url_effective": "$( get_url || get_url || echo ERROR )",
   "http_accept_language": "$( cat /tmp/ACCEPT_LANG )",
   "user_agent": "$( cat /tmp/UA )",
   "download_time_ms": $TIME_MS,
