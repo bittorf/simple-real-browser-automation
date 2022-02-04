@@ -179,13 +179,20 @@ press_enter_and_measure_time_till_traffic_relaxes()
 
 get_url()
 {
-        xdotool key ctrl+l              # jump to url-bar
-        xdotool key ctrl+c
-        OUT="$( xclip -out -selection 'clipboard' )"
-        xdotool key Escape
-        xdotool key Tab
+	local clipboard=
 
-        printf '%s\n' "$OUT"
+	while test -z "$clipboard"; do {
+		xdotool key ctrl+l              # jump to url-bar
+
+		printf '%s' | xclip -selection 'clipboard'	# clear
+		xdotool key ctrl+c
+		clipboard="$( xclip -out -selection 'clipboard' )"
+
+		xdotool key Escape
+		xdotool key Tab
+	} done
+
+	printf '%s\n' "$clipboard"
 }
 
 type_url_into_bar()
