@@ -2,7 +2,7 @@
 {
 
 read _ QUERY _ && QUERY="${QUERY#?}"
-printf '%s\n\n' 'HTTP/1.1 200 OK'
+printf '%s\r\n' 'HTTP/1.1 200 OK'
 
 case "$QUERY" in
         action=startssh)
