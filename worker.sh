@@ -25,6 +25,15 @@ json_emit()
 	local value="$2"
 	local message="$3"
 
+	case "$message" in
+		'') addbytes=9 ;;
+		 *) addbytes=34 ;;
+	esac
+
+	printf '%s\r\n'   "Connection: close"
+	printf '%s\r\n'   "Content-Length: $(( ${#key} + ${#value} + ${#message} + addbytes ))"
+	printf '%s\r\n\n' "Content-Type: application/json"
+
 	# https://github.com/omniti-labs/jsend
 	case "$message" in
 		'') printf '%s\n' "{\"$key\": \"$value\"}" ;;
