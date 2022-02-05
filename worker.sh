@@ -81,7 +81,13 @@ useragent_set()
 
 start_framebuffer()
 {
-	pidof Xvfb >/dev/null || nohup Xvfb $DISPLAY -screen 0 ${RESOLUTION}x24+32 &
+	pidof Xvfb >/dev/null || {
+		nohup Xvfb $DISPLAY -screen 0 ${RESOLUTION}x24+32 &
+
+		sleep 1
+		while ! pidof Xvfb >/dev/null; do sleep 1; done
+		true 
+	}
 }
 
 resetbrowser()		# TODO: clear cache + set lang + set UA
