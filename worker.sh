@@ -47,9 +47,33 @@ pid_exists()
 	kill -0 "${1:-foo}" 2>/dev/null
 }
 
+userjs_replace_or_add()
+{
+	local key="$1"
+	local value="$2"
+	local file dir line quote='"'
+
+	file="$( find "$HOME/.mozilla/firefox" -type f -name 'prefs.js' )"
+	dir="$( dirname "$file" )"
+	file="$dir/user.js"
+
+	# e.g. user_pref("browser.sessionstore.resume_from_crash", false);
+	# filter out our line:
+	grep -v "(\"$key\"," "$file" >"$file.tmp"
+
+	# add out changed line:
+	case "$value" in 'true'|'false') quote= ;; esac
+	printf '%s\n' "user_pref(\"$key\", ${quote}${value}${quote});" >>"$file.tmp"
+
+	mv "$file.tmp" "$file"
+}
+
 useragent_set()
 {
-	echo "$1" >/tmp/UA_USERWISH
+	local ua="$1"
+
+	printf '%s\n' "$ua" >/tmp/UA_USERWISH
+	userjs_replace_or_add 'general.useragent.override' "$ua"
 }
 
 resetbrowser()		# TODO: clear cache + set lang + set UA
@@ -187,7 +211,7 @@ get_url()
 
 	xdotool key ctrl+l              # jump to url-bar
 
-	printf '%s' | xclip -selection 'clipboard'	# clear
+	printf '%s' ''   | xclip -selection 'clipboard'		# clear
 	xdotool key ctrl+c
 	clipboard="$( xclip -out -selection 'clipboard' )"
 
