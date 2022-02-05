@@ -15,7 +15,7 @@ case "$QUERY" in
         ;;
         action=resetbrowser|action=reboot)
                 /root/worker.sh "$QUERY" >/dev/null 2>&1 & disown
-		/root/worker.sh json_emit "$?"
+		/root/worker.sh json_emit "$?" "$QUERY"
         ;;
         language=*|screensize=*|screenshot*|update|action=update|useragent=*|action=poweroff|action=startvnc|action=report)
                 /root/worker.sh "$QUERY"

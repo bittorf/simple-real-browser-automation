@@ -113,6 +113,7 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
 	} done
 
 	pid_exists "$pid" && kill "$pid"
+	true
 }
 
 url_decode() {
