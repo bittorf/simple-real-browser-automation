@@ -132,6 +132,8 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
 
 		type_url_into_bar 'http://127.0.0.1:8080'	# TODO: no search-suggestions, empty background
 		xdotool key Return
+
+		sleep 1
 	} done
 
 	pid_exists "$pid" && kill "$pid"
