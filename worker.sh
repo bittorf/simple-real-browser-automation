@@ -15,6 +15,7 @@ case "$ACTION" in
 	;;
 esac
 
+export HOME=/root
 export DISPLAY=:1
 read -r RESOLUTION 2>/dev/null </tmp/RESOLUTION || RESOLUTION=1280x720
 
@@ -61,9 +62,11 @@ userjs_replace_or_add()
 	# filter out our line:
 	grep -v "(\"$key\"," "$file" >"$file.tmp"
 
-	# add out changed line:
-	case "$value" in 'true'|'false') quote= ;; esac
-	printf '%s\n' "user_pref(\"$key\", ${quote}${value}${quote});" >>"$file.tmp"
+	[ "$value" = default ] || {
+		# add out changed line:
+		case "$value" in 'true'|'false') quote= ;; esac
+		printf '%s\n' "user_pref(\"$key\", ${quote}${value}${quote});" >>"$file.tmp"
+	}
 
 	mv "$file.tmp" "$file"
 }
