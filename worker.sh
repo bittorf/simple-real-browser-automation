@@ -120,13 +120,15 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
         while ! ID="$( xdotool search --classname Navigator )"; do sleep 1; done
 	sleep 1
 
-	true >/tmp/UA
+	true >/tmp/UA			# is written from 'detect_headers'
 	true >/tmp/ACCEPT_LANG
 	while ! test -s /tmp/UA; do {
-		pid_exists "$pid" || {
+		if pid_exists "$pid"; then
 			nc -l -p 8080 -e "$0" detect_headers &
 			pid=$!
-		}
+		else
+			sleep 1
+		fi
 
 		type_url_into_bar 'http://127.0.0.1:8080'
 		xdotool key Return
@@ -312,8 +314,11 @@ case "$ACTION" in
 		useragent_set "$PLAIN"
 	;;
 	detect_headers)
-		printf '%s\n\n' 'HTTP/1.1 200 OK'
-		printf '%s' 'OK'
+		printf '%s\r\n'   'HTTP/1.1 200 OK'
+		printf '%s\r\n'   'Connection: close'
+		printf '%s\r\n'   'Content-Length: 3'
+		printf '%s\r\n\n' 'Content-Type: text/plain'
+		printf '%s\n' 'OK'
 
 		I=2
 		while read -r LINE; do {
