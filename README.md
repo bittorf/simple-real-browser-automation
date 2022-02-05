@@ -115,6 +115,7 @@ apk add file            # only for png_resolution_get()
 apk add xdotool
 apk add xclip
 apk add coreutils	# base64 -w0 file.bin
+apk add font-noto
 # visgrep:
 wget -qO /usr/local/bin/visgrep http://intercity-vpn.de/alpine-usr-local-bin-visgrep
 chmod +x /usr/local/bin/visgrep

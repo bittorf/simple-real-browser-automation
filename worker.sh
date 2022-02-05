@@ -124,13 +124,13 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
 	true >/tmp/ACCEPT_LANG
 	while ! test -s /tmp/UA; do {
 		if pid_exists "$pid"; then
+			sleep 1
+		else
 			nc -l -p 8080 -e "$0" detect_headers &
 			pid=$!
-		else
-			sleep 1
 		fi
 
-		type_url_into_bar 'http://127.0.0.1:8080'
+		type_url_into_bar 'http://127.0.0.1:8080'	# TODO: no search-suggestions, empty background
 		xdotool key Return
 	} done
 
