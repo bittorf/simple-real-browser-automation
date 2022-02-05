@@ -107,6 +107,10 @@ press_enter_and_measure_time_till_traffic_relaxes()
         local bytes_up bytes_up_old diff_up sum_up
         local up rest t0 t1 time time_ready list=
 
+	# TODO:
+	# tcpdump -i eth0 -w foo.pcap
+	# tcpdump -vnr foo.pcap | sed -n 's/^.*length \([0-9]*\).*/\1/p' | awk '{s+=$1} END {print s}'
+
 	true >/tmp/NETWORK_ACTION
 	true >/tmp/DOWNLOAD_TIME_MS
 	true >/tmp/DOWNLOAD_BYTES
@@ -426,21 +430,21 @@ EOF
 
     "usage   ":       "curl http://server/key=value",
 
-    "example1":       "                   loadurl=google.de",
-    "example2":       "                   screenshot=jpg",
-    "example3":       "                   action=report",
+    "example1":       "               .../loadurl=google.de",
+    "example2":       "               .../screenshot=jpg",
+    "example3":       "               .../action=report",
 
-    "example4":       "                   language=zh-CN",
-    "example5":       "                   useragent=Mozilla/5.0 (linux)",
-    "example6":       "                   screensize=800x3000",
-    "example7":       "                   action=resetbrowser",
+    "example4":       "               .../language=zh-CN",
+    "example5":       "               .../useragent=Mozilla/5.0+(linux)",
+    "example6":       "               .../screensize=800x3000",
+    "example7":       "               .../action=resetbrowser",
 
-    "example8":       "                   action=update",
-    "example9":       "                   action=poweroff",
-    "exampleA":       "                   action=reboot",
-    "exampleB":       "                   action=startssh",
-    "exampleC":       "                   action=startvnc",
-    "exampleD":       "                   action=sysinfo",
+    "example8":       "               .../action=update",
+    "example9":       "               .../action=poweroff",
+    "exampleA":       "               .../action=reboot",
+    "exampleB":       "               .../action=startssh",
+    "exampleC":       "               .../action=startvnc",
+    "exampleD":       "               .../action=sysinfo",
 
     "see": "https://github.com/bittorf/simple-real-browser-automation"
   }
