@@ -79,9 +79,16 @@ useragent_set()
 	userjs_replace_or_add 'general.useragent.override' "$ua"
 }
 
+start_framebuffer()
+{
+	pidof Xvfb >/dev/null || nohup Xvfb $DISPLAY -screen 0 ${RESOLUTION}x24+32 &
+}
+
 resetbrowser()		# TODO: clear cache + set lang + set UA
 {
 	local pid=
+
+	true >/tmp/BROWSER
 
         sysctl -qw vm.panic_on_oom=2
         sysctl -qw kernel.panic_on_oops=1
@@ -89,9 +96,7 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
         sysctl -qw vm.min_free_kbytes=4096
 
 	browser_stop
-
-        pidof Xvfb >/dev/null || nohup Xvfb $DISPLAY -screen 0 ${RESOLUTION}x24+32 &
-
+	start_framebuffer
         firefox --version >/tmp/BROWSER || return 1
 
         nohup firefox >>/tmp/debug-firefox.1 2>>/tmp/debug-firefox.2 &
@@ -270,6 +275,8 @@ case "$ACTION" in
 		if pidof x11vnc >/dev/null; then
 			json_emit 'status' 'success' 'x11vnc already running'
 		else
+			start_framebuffer
+
 			if x11vnc -display :1 -cursor most -bg -nopw -xkb 2>/dev/null >/dev/null; then
 				json_emit 'status' 'success' 'x11vnc started'
 			else
