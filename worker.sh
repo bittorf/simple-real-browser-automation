@@ -74,7 +74,7 @@ userjs_replace_or_add()
 
 	[ "$value" = default ] || {
 		# add out changed line:
-		case "$value" in 'true'|'false'|[0-9]|'') quote= ;; esac
+		case "$value" in 'true'|'false'|'null'|[0-9]|'') quote= ;; esac
 		printf '%s\n' "user_pref(\"$key\", ${quote}${value:-null}${quote});" >>"$file.tmp"
 	}
 
@@ -115,12 +115,12 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
 	start_framebuffer
         firefox --version >/tmp/BROWSER || return 1
 
-	userjs_replace_or_add browser.urlbar.autoFill false
-	userjs_replace_or_add services.sync.prefs.sync.browser.urlbar.maxRichResults false
-	userjs_replace_or_add browser.urlbar.maxRichResults 0
-	userjs_replace_or_add browser.newtabpage.activity-stream.feeds.topsites false
-	userjs_replace_or_add browser.newtabpage.activity-stream.feeds.section.highlights false
-	userjs_replace_or_add browser.newtabpage.activity-stream.showSearch false
+	userjs_replace_or_add browser.urlbar.autoFill 'false'
+	userjs_replace_or_add services.sync.prefs.sync.browser.urlbar.maxRichResults 'false'
+	userjs_replace_or_add browser.urlbar.maxRichResults '0'
+	userjs_replace_or_add browser.newtabpage.activity-stream.feeds.topsites 'false'
+	userjs_replace_or_add browser.newtabpage.activity-stream.feeds.section.highlights 'false'
+	userjs_replace_or_add browser.newtabpage.activity-stream.showSearch 'false'
 
         nohup firefox >>/tmp/debug-firefox.1 2>>/tmp/debug-firefox.2 &
 
