@@ -252,14 +252,14 @@ get_url()
 {
 	local clipboard=
 
-	xdotool key ctrl+l              # jump to url-bar
+	xdotool key ctrl+l sleep 0.1		# jump to url-bar
 
 	printf '%s' ''   | xclip -selection 'clipboard'		# clear
-	xdotool key ctrl+c
+	xdotool key ctrl+c sleep 0.1
 	clipboard="$( xclip -out -selection 'clipboard' )"
 
-	xdotool key Escape
-	xdotool key Tab
+	xdotool key Escape sleep 0.1
+	xdotool key Tab				# park selection on next element
 
 	printf '%s\n' "$clipboard"
 	test -n "$clipboard"
