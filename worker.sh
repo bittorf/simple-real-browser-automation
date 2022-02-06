@@ -17,7 +17,10 @@ esac
 
 export HOME=/root
 export DISPLAY=:1
+
 read -r RESOLUTION 2>/dev/null </tmp/RESOLUTION || RESOLUTION=1280x720
+X=${RESOLUTION%x*}	# e.g. 800x600 => 800
+Y=${RESOLUTION#*x}	#              => 600
 
 json_emit()
 {
@@ -291,13 +294,16 @@ replace()
 	rm -f    /tmp/new.sh
 }
 
+mouse_set_defaultpos()
+{
+	xdotool mousemove "$(( X / 2 ))" 0
+}
+
 clearcache()
 {
 	xdotool key ctrl+shift+Delete	# GUI for cache
 	xdotool key shift+e		# select 'Everything'
 
-	X=${RESOLUTION%x*}	# e.g. 800x600 => 800
-	Y=${RESOLUTION#*x}	#              => 600
 	xdotool mousemove "$(( X / 2 ))" '345'
 
 	xdotool key Tab
@@ -311,6 +317,8 @@ clearcache()
 	xdotool key Tab
 	sleep 5
 	xdotool key Return
+
+	mouse_set_defaultpos
 }
 
 case "$ACTION" in
@@ -505,8 +513,6 @@ EOF
 		true >/tmp/screen.size
 		true >/tmp/screen.format
 
-		X=${RESOLUTION%x*}	# e.g. 800x600 => 800
-		Y=${RESOLUTION#*x}	#              => 600
                 ID="$( xdotool search --classname Navigator )" || resetbrowser
                 URL="$( url_decode "$ARG" )"
                 echo "$URL" >/tmp/URL
@@ -522,6 +528,7 @@ EOF
 			xdotool windowsize "$ID" "$X" "$Y"
 		} done
 
+		mouse_set_defaultpos
 		type_url_into_bar "$URL"
 
 		press_enter_and_measure_time_till_traffic_relaxes
