@@ -295,6 +295,11 @@ clearcache()
 {
 	xdotool key ctrl+shift+Delete	# GUI for cache
 	xdotool key shift+e		# select 'Everything'
+
+	X=${RESOLUTION%x*}	# e.g. 800x600 => 800
+	Y=${RESOLUTION#*x}	#              => 600
+	xdotool mousemove "$(( X / 2 ))" '345'
+
 	xdotool key Tab
 	xdotool key Tab
 	xdotool key Tab
