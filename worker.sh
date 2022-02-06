@@ -296,7 +296,7 @@ replace()
 
 mouse_set_defaultpos()
 {
-	xdotool mousemove "$(( X / 2 ))" 0
+	xdotool mousemove 30 30
 }
 
 clearcache()
