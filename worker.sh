@@ -264,14 +264,14 @@ type_url_into_bar()
 
 	xdotool key ctrl+t			# new tab
 	xdotool key ctrl+Page_Up		# go back to old tab
-	xdotool key ctrl+w			# close (old) tab
+	xdotool key ctrl+w sleep 0.1		# close (old) tab
 
-	xdotool key ctrl+l			# jump to url-bar
+	xdotool key ctrl+l sleep 0.1		# jump to url-bar
 	xdotool key BackSpace			# make sure we start empty
 
 	printf '%s' "$url " | xclip -selection 'clipboard'	# append a space
 
-	xdotool key ctrl+v			# paste clipboard
+	xdotool key ctrl+v sleep 0.1		# paste clipboard
 }
 
 replace()
