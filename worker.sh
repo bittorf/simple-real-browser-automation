@@ -72,11 +72,15 @@ userjs_replace_or_add()		# make sure browser does not run!
 	# filter out our line:
 	grep -v "(\"$key\"," "$file" >"$file.tmp"
 
-	[ "$value" = default ] || {
+	if [ "$value" = default ]; then
+		# this is needed e.g. for 'general.useragent.override'
+		grep -v "$key" "$dir/prefs.js" >"$dir/prefs.js.tmp"
+		mv "$dir/prefs.js.tmp" "$dir/prefs.js"
+	else
 		# add out changed line:
 		case "$value" in 'true'|'false'|'null'|[0-9]|'') quote= ;; esac
 		printf '%s\n' "user_pref(\"$key\", ${quote}${value:-null}${quote});" >>"$file.tmp"
-	}
+	fi
 
 	mv "$file.tmp" "$file"
 }
@@ -114,6 +118,7 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
 
 	read -r useragent 2>/dev/null </tmp/UA_USERWISH && \
 	userjs_replace_or_add 'general.useragent.override' "$useragent"
+
 	userjs_replace_or_add browser.urlbar.autoFill 'false'
 	userjs_replace_or_add services.sync.prefs.sync.browser.urlbar.maxRichResults 'false'
 	userjs_replace_or_add browser.urlbar.maxRichResults '0'
