@@ -476,8 +476,8 @@ EOF
 		true >/tmp/screen.size
 		true >/tmp/screen.format
 
-		X=${RESOLUTION%x*}
-		Y=${RESOLUTION#*x}
+		X=${RESOLUTION%x*}	# e.g. 800x600 => 800
+		Y=${RESOLUTION#*x}	#              => 600
                 ID="$( xdotool search --classname Navigator )" || resetbrowser
                 URL="$( url_decode "$ARG" )"
                 echo "$URL" >/tmp/URL
@@ -487,7 +487,12 @@ EOF
 		echo "$PUBIP"   >/tmp/PUBIP
 		echo "$COUNTRY" >/tmp/COUNTRY
 
-                xdotool windowsize "$ID" "$X" "$Y"	# resize max to fit screen
+		# resize max to fit screen:
+		while ! test "$GEOMETRY" = "$RESOLUTION"; do {
+			for GEOMETRY in $( xdotool getwindowgeometry "$ID" ); do :; done
+			xdotool windowsize "$ID" "$X" "$Y"
+		} done
+
 		type_url_into_bar "$URL"
 
 		press_enter_and_measure_time_till_traffic_relaxes
