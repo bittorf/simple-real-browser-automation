@@ -58,7 +58,7 @@ pid_exists()
 	kill -0 "${1:-foo}" 2>/dev/null
 }
 
-userjs_replace_or_add()
+userjs_replace_or_add()		# make sure browser does not run!
 {
 	local key="$1"
 	local value="$2"
@@ -83,10 +83,7 @@ userjs_replace_or_add()
 
 useragent_set()
 {
-	local ua="$1"
-
-	printf '%s\n' "$ua" >/tmp/UA_USERWISH
-	userjs_replace_or_add 'general.useragent.override' "$ua"
+	printf '%s\n' "$1" >/tmp/UA_USERWISH
 }
 
 start_framebuffer()
@@ -102,7 +99,7 @@ start_framebuffer()
 
 resetbrowser()		# TODO: clear cache + set lang + set UA
 {
-	local pid=
+	local useragent pid=
 
 	true >/tmp/BROWSER
 
@@ -115,6 +112,8 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
 	start_framebuffer
         firefox --version >/tmp/BROWSER || return 1
 
+	read -r useragent 2>/dev/null </tmp/UA_USERWISH && \
+	userjs_replace_or_add 'general.useragent.override' "$useragent"
 	userjs_replace_or_add browser.urlbar.autoFill 'false'
 	userjs_replace_or_add services.sync.prefs.sync.browser.urlbar.maxRichResults 'false'
 	userjs_replace_or_add browser.urlbar.maxRichResults '0'
