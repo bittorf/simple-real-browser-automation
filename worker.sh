@@ -291,6 +291,23 @@ replace()
 	rm -f    /tmp/new.sh
 }
 
+clearcache()
+{
+	xdotool key ctrl+shift+Delete	# GUI for cache
+	xdotool key shift+e		# select 'Everything'
+	xdotool key Tab
+	xdotool key Tab
+	xdotool key Tab
+	xdotool key Tab
+	xdotool key Tab
+	xdotool key Tab
+	xdotool key Tab
+	xdotool key Tab
+	xdotool key Tab
+	sleep 5
+	xdotool key Return
+}
+
 case "$ACTION" in
 	json_emit)
 		case "$ARG" in
@@ -318,6 +335,9 @@ case "$ACTION" in
 				json_emit 'status' 'error' "x11vnc did not started RC:$?"
 			fi
 		fi
+	;;
+	clearcache)
+		clearcache
 	;;
 	update)
 		BASE="${ARG:-https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main}"

@@ -158,5 +158,8 @@ qemu-system-x86_64 -cpu host -enable-kvm -display none -nodefaults -m 512 -snaps
 # TODO: https://zipcon.net/~swhite/docs/computers/browsers/fonttest.html
 # TODO: force geolocation and dont prompt when asked to query?
 # TODO: allow microphone (=file.wav) + camera (=stream.http or akvcam?) + e.g. jitsi-login
+# TODO: cleancache
+# TODO: netflix login
+
 
 ```
