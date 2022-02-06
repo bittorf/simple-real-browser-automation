@@ -30,6 +30,7 @@ json_emit()
 		 *) addbytes=34 ;;
 	esac
 
+	# RFC2616 | https://stackoverflow.com/questions/5757290/http-header-line-break-style
 	printf '%s\r\n'   "Connection: close"
 	printf '%s\r\n'   "Content-Length: $(( ${#key} + ${#value} + ${#message} + addbytes ))"
 	printf '%s\r\n\n' "Content-Type: application/json"
@@ -73,8 +74,8 @@ userjs_replace_or_add()
 
 	[ "$value" = default ] || {
 		# add out changed line:
-		case "$value" in 'true'|'false'|[0-9]) quote= ;; esac
-		printf '%s\n' "user_pref(\"$key\", ${quote}${value}${quote});" >>"$file.tmp"
+		case "$value" in 'true'|'false'|[0-9]|'') quote= ;; esac
+		printf '%s\n' "user_pref(\"$key\", ${quote}${value:-null}${quote});" >>"$file.tmp"
 	}
 
 	mv "$file.tmp" "$file"
@@ -117,7 +118,7 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
 	userjs_replace_or_add browser.urlbar.autoFill false
 	userjs_replace_or_add services.sync.prefs.sync.browser.urlbar.maxRichResults false
 	userjs_replace_or_add browser.urlbar.maxRichResults 0
-	userjs_replace_or_add browser.newtabpage.activity-stream.feeds.topsites
+	userjs_replace_or_add browser.newtabpage.activity-stream.feeds.topsites false
 	userjs_replace_or_add browser.newtabpage.activity-stream.feeds.section.highlights false
 	userjs_replace_or_add browser.newtabpage.activity-stream.showSearch false
 
