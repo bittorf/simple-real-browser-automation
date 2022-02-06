@@ -393,13 +393,13 @@ case "$ACTION" in
 		# jq -r .screenshot | base64 -d
 
 		if test -s /tmp/NETWORK_ACTION; then
-			cat <<EOF
+			cat >/tmp/REPORT <<EOF
 {
   "status": "success",
   "time_unix": $( cat /tmp/URL_START ),
   "time_date": "$DATE $( tail -n1 /etc/localtime )",
   "url_userinput": "$( cat /tmp/URL )",
-  "url_effective": "$( get_url || get_url || echo ERROR )",
+  "url_effective": "$( cat /tmp/URL_EFFECTIVE )",
   "http_accept_language": "$( cat /tmp/ACCEPT_LANG )",
   "user_agent": "$( cat /tmp/UA )",
   "download_time_ms": $TIME_MS,
@@ -428,6 +428,10 @@ $(
   "script": "https://github.com/bittorf/simple-real-browser-automation"
 }
 EOF
+			printf '%s\r\n'   "Connection: close"
+			printf '%s\r\n'   "Content-Length: $( wc -c </tmp/REPORT )"
+			printf '%s\r\n\n' "Content-Type: application/json"
+			cat /tmp/REPORT
 		else
 			json_emit 'status' 'error' 'no URL loaded yet?'
 		fi
@@ -475,6 +479,10 @@ EOF
 		type_url_into_bar "$URL"
 
 		press_enter_and_measure_time_till_traffic_relaxes
+
+		# try up to 2 times:
+		get_url >/tmp/URL_EFFECTIVE || \
+		get_url >/tmp/URL_EFFECTIVE
         ;;
         *)
 		cat <<EOF
