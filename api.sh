@@ -10,9 +10,9 @@ case "$QUERY" in
 		/root/worker.sh json_emit "$?" "$QUERY"
         ;;
         action=sysinfo)
-		printf '\n%s\n' '{"status": "success", "data": {"message": "' && uname -a && uptime && free
-                ps | while read -r LINE; do case "$LINE" in *']') ;; *) printf '%s\n' "$LINE" ;; esac; done
-		printf '%s\n' '"}}'
+		printf '\n%s\n' '{"status": "success", "data": [' && { uname -a && uptime && free; } | sed 's/.*/"&",/'
+                ps | while read -r LINE; do case "$LINE" in *']') ;; *) printf '%s\n' "\"$LINE\"," ;; esac; done
+		printf '%s\n' 'null]}'
         ;;
         action=resetbrowser|action=reboot)
                 /root/worker.sh "$QUERY" >/dev/null 2>&1 & disown
