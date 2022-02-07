@@ -34,7 +34,6 @@ json_emit()
 	esac
 
 	# RFC2616 | https://stackoverflow.com/questions/5757290/http-header-line-break-style
-	printf '%s\r\n'   "Connection: close"
 	printf '%s\r\n'   "Content-Length: $(( ${#key} + ${#value} + ${#message} + addbytes ))"
 	printf '%s\r\n\n' "Content-Type: application/json"
 
@@ -477,7 +476,6 @@ $(
   "script": "https://github.com/bittorf/simple-real-browser-automation"
 }
 EOF
-			printf '%s\r\n'   "Connection: close"
 			printf '%s\r\n'   "Content-Length: $( wc -c </tmp/REPORT )"
 			printf '%s\r\n\n' "Content-Type: application/json"
 			cat /tmp/REPORT

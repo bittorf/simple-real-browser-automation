@@ -2,7 +2,7 @@
 {
 
 read _ QUERY _ && QUERY="${QUERY#?}"
-printf '%s\r\n' 'HTTP/1.1 200 OK'
+printf '%s\r\n%s\r\n' 'HTTP/1.1 200 OK' 'Connection: close'
 
 case "$QUERY" in
         action=startssh)
@@ -10,8 +10,9 @@ case "$QUERY" in
 		/root/worker.sh json_emit "$?" "$QUERY"
         ;;
         action=sysinfo)
-                uname -a && uptime && free	# TODO: json
+		printf '\n%s\n' '{"status": "success", "data": {"message": "' && uname -a && uptime && free
                 ps | while read -r LINE; do case "$LINE" in *']') ;; *) printf '%s\n' "$LINE" ;; esac; done
+		printf '%s\n' '"}}'
         ;;
         action=resetbrowser|action=reboot)
                 /root/worker.sh "$QUERY" >/dev/null 2>&1 & disown
