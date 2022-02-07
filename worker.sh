@@ -253,9 +253,9 @@ get_url()
 
 	xdotool key ctrl+l sleep 0.1		# jump to url-bar
 
-	printf '%s' ''   | xclip -selection 'clipboard'		# clear
+	printf '%s' '' | xclip -in  -selection 'clipboard'	# clear
 	xdotool key ctrl+c sleep 0.1
-	clipboard="$( xclip -out -selection 'clipboard' )"
+	clipboard="$(    xclip -out -selection 'clipboard' )"
 
 	xdotool key Escape sleep 0.1
 	xdotool key Tab				# park selection on next element
@@ -275,7 +275,7 @@ type_url_into_bar()
 	xdotool key ctrl+l sleep 0.1		# jump to url-bar
 	xdotool key BackSpace			# make sure we start empty
 
-	printf '%s' "$url " | xclip -selection 'clipboard'	# append a space
+	printf '%s' "$url " | xclip -in -selection 'clipboard'	# URL+space into clipboard
 
 	xdotool key ctrl+v sleep 0.1		# paste clipboard
 }
