@@ -215,7 +215,7 @@ press_enter_and_measure_time_till_traffic_relaxes()
         date +%s >/tmp/URL_START
         xdotool key Return
 
-        i=150		# 150 x 0.1 sec = 10 sec max runtime
+        i=250		# 250 x 0.1 sec = 25 sec max runtime
 
         while case "$i" in 0) false ;; esac
         do
