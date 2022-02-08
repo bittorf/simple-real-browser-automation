@@ -215,6 +215,7 @@ press_enter_and_measure_time_till_traffic_relaxes()
         date +%s >/tmp/URL_START
         xdotool key Return
 
+	j=-1		# make sure we wait for traffic
         i=250		# 250 x 0.1 sec = 25 sec max runtime
 
         while case "$i" in 0) false ;; esac
@@ -233,6 +234,7 @@ press_enter_and_measure_time_till_traffic_relaxes()
                 time="$(( t1 - t0 ))"
                 list="$list $time,$diff_dn,$diff_up"
 
+		# wait till 'j' and up/down-traffic is 0:
                 case "$j-$diff_dn-$diff_up" in
                         0-0-0) break ;;
                         *-0-0) j=$(( j - 1 )) ;;
