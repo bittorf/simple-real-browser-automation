@@ -127,6 +127,7 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
 	userjs_replace_or_add browser.newtabpage.activity-stream.feeds.topsites 'false'
 	userjs_replace_or_add browser.newtabpage.activity-stream.feeds.section.highlights 'false'
 	userjs_replace_or_add browser.newtabpage.activity-stream.showSearch 'false'
+	userjs_replace_or_add browser.newtabpage.activity-stream.feeds.snippets 'false'
 
         nohup firefox >>/tmp/debug-firefox.1 2>>/tmp/debug-firefox.2 &
 
