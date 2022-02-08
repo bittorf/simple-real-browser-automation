@@ -166,12 +166,10 @@ url_decode() {
 
 press_enter_and_measure_time_till_traffic_relaxes()
 {
-        local j=20		# consecutive measurepoints without traffic = 2 sec
-        local i=150		# 150 x 0.1 sec = 10 sec max runtime
         local dev line old=
         local bytes_dn bytes_dn_old diff_dn sum_dn
         local bytes_up bytes_up_old diff_up sum_up
-        local up rest t0 t1 time time_ready list=
+        local up rest t0 t1 time time_ready i j list=
 
 	# TODO:
 	# tcpdump -i eth0 -w foo.pcap
@@ -216,6 +214,8 @@ press_enter_and_measure_time_till_traffic_relaxes()
         date +%s >/tmp/URL_START
         xdotool key Return
 
+        i=150		# 150 x 0.1 sec = 10 sec max runtime
+
         while case "$i" in 0) false ;; esac
         do
                 i=$(( i - 1 ))
@@ -235,7 +235,7 @@ press_enter_and_measure_time_till_traffic_relaxes()
                 case "$j-$diff_dn-$diff_up" in
                         0-0-0) break ;;
                         *-0-0) j=$(( j - 1 )) ;;
-                            *) time_ready="$time" ;;
+                            *) time_ready="$time" && j=20 ;; # consecutive measurepoints without traffic = 2 sec
                 esac
 
                 sleep 0.1
