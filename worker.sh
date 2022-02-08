@@ -278,6 +278,7 @@ type_url_into_bar()
 	printf '%s' "$url " | xclip -in -selection 'clipboard'	# URL+space into clipboard
 
 	xdotool key ctrl+v sleep 0.1		# paste clipboard
+	xdotool key Right			# force unselect text
 }
 
 replace()
