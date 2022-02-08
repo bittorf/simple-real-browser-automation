@@ -1,7 +1,7 @@
 #!/bin/sh
 {
 
-read _ QUERY _ && QUERY="${QUERY#?}"
+read -r _ QUERY _ && QUERY="${QUERY#?}"
 printf '%s\r\n%s\r\n' 'HTTP/1.1 200 OK' 'Connection: close'
 
 case "$QUERY" in
