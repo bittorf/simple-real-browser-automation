@@ -281,7 +281,7 @@ type_url_into_bar()
 	xdotool key Right			# force unselect text
 }
 
-replace()
+script_safe_replace()
 {
 	local dest="$1"
 	local url="$2"
@@ -356,8 +356,8 @@ case "$ACTION" in
 		BASE="${ARG:-https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main}"
 
 		RC=0
-		replace '/etc/local.d/api.sh' "$BASE/api.sh"    || RC=1
-		replace '/root/worker.sh'     "$BASE/worker.sh" || RC=2
+		script_safe_replace '/etc/local.d/api.sh' "$BASE/api.sh"    || RC=1
+		script_safe_replace '/root/worker.sh'     "$BASE/worker.sh" || RC=2
 		exit $RC
 	;;
 	useragent)
