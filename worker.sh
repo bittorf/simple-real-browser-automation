@@ -17,6 +17,7 @@ esac
 
 export HOME=/root
 export DISPLAY=:1
+export FALLTROUGH=222
 
 read -r RESOLUTION 2>/dev/null </tmp/RESOLUTION || RESOLUTION=1280x720
 X=${RESOLUTION%x*}	# e.g. 800x600 => 800
@@ -327,6 +328,9 @@ clearcache()
 case "$ACTION" in
 	json_emit)
 		case "$ARG" in
+			"$FALLTROUGH")
+				exit 0
+			;;
 			0)
 				INPUT='status'
 				ARG='success'
@@ -571,6 +575,7 @@ EOF
   }
 }
 EOF
+		exit "$FALLTROUGH"
 	;;
 esac
 
