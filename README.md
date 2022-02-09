@@ -160,6 +160,7 @@ qemu-system-x86_64 -cpu host -enable-kvm -display none -nodefaults -m 512 -snaps
 # TODO: allow microphone (=file.wav) + camera (=stream.http or akvcam?) + e.g. jitsi-login
 # TODO: cleancache
 # TODO: netflix login
-
+# TODO: https://github.com/angrykoala/awesome-browser-automation
+# TODO: Cache-Control: no-cache ??? https://developer.mozilla.org/de/docs/Web/HTTP/Headers/Cache-Control
 
 ```
