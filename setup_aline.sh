@@ -65,3 +65,10 @@ done <"$FIFO.out"
 
 while kill -0 "$QEMU_PID" 2>/dev/null; do sleep 1; done
 rm -f "$FIFI.in" "$FIFI.out"
+
+# now boot with ssh-portforwarding:
+OPTS="-nic user,hostfwd=tcp::10022-:22 -hda"
+qemu-system-x86_64 -cpu host -enable-kvm -display none -nodefaults -m 512 $OPTS $HDD &
+
+while ! nc -z 127.0.0.1 10022; do sleep 1; done
+ssh root@127.0.0.1 -p 10022 "wget https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main/setup_linux.sh && sh setup_linux.sh"

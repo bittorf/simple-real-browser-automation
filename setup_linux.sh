@@ -1,5 +1,8 @@
 #!/bin/sh
 #
+# tiny setup = 271mb image
+# full setup = ???mb image
+#
 # TODO: repeat on error?
 
 sed -i 's|^#\(.*/community$\)|\1|' /etc/apk/repositories
