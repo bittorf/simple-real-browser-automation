@@ -62,55 +62,6 @@ OPTS="-nic user,hostfwd=tcp::10022-:22 -hda"
 qemu-system-x86_64 -cpu host -enable-kvm -display none -nodefaults -m 512 $OPTS $HDD
 ssh root@127.0.0.1 -p 10022
 
-# install some packages:
-sed -i 's|^#\(.*/community$\)|\1|' /etc/apk/repositories
-apk update
-# apk add dropbear-scp
-# apk add ffmpeg
-# apk add x11vnc
-# apk add dnsmasq               # really?
-apk add zram-init && rc-update add zram-init default
-apk add xvfb
-apk add firefox-esr
-apk add scrot
-apk add perl
-apk add imagemagick
-apk add file            # only for png_resolution_get()
-apk add xdotool
-apk add xclip
-apk add coreutils	# base64 -w0 file.bin
-apk add font-noto
-# visgrep:
-wget -qO /usr/local/bin/visgrep http://intercity-vpn.de/alpine-usr-local-bin-visgrep
-chmod +x /usr/local/bin/visgrep
-# bezier:
-mkdir -p /usr/local/lib/perl5/site_perl/Math
-wget -qO /usr/local/lib/perl5/site_perl/Math/Bezier.pm http://intercity-vpn.de/Bezier.pm
-wget -qO bezier.pl http://intercity-vpn.de/bezier.pl
-chmod +x bezier.pl
-rm -f /var/cache/apk/*
-
-# mini-webservice:
-printf '%s\n%s\n' '#!/bin/sh' 'cat /proc/uptime >/tmp/BOOTED; nohup /etc/local.d/api &' >/etc/local.d/api.start
-printf '%s\n%s\n' '#!/bin/sh' 'while true; do nc -l -p 80 -e /etc/local.d/api.sh; done' >/etc/local.d/api
-chmod +x /etc/local.d/api.start /etc/local.d/api
-rc-update add local default
-
-# disable unneeded stuff:
-sed -i -e 's/^.*swap/# &/' -e 's/^.*cdrom/# &/' -e 's/^.*usbdisk/# &/' /etc/fstab
-sed -i 's|.*getty.*|# &|' /etc/inittab
-rc-update del syslog boot	# check with 'rc-status'
-rc-update del crond default
-rc-update del dropbear default
-rc-update del acpid		# still working 'poweroff'
-
-# TODO: all in one setupfile:
-# wget -O setup.sh "github..." && sh setup
-BASE='https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main'
-FILE='/etc/local.d/api.sh' && wget -O "$FILE" "$BASE/api.sh"    && chmod +x "$FILE"
-FILE='/root/worker.sh'     && wget -O "$FILE" "$BASE/worker.sh" && chmod +x "$FILE"
-poweroff
-
 # now snapshotted:
 OPTS="-nic user,hostfwd=tcp::10022-:22,hostfwd=tcp::10080-:80,hostfwd=tcp::10059-:5900 -hda"
 qemu-system-x86_64 -cpu host -enable-kvm -display none -nodefaults -m 512 -snapshot $OPTS $HDD
