@@ -58,42 +58,6 @@ there is more help:
 curl "http://127.0.0.1:10080/help
 ```
 
-### Setup
-
-```
-URL='https://dl-cdn.alpinelinux.org/alpine/v3.15/releases/x86_64/alpine-virt-3.15.0-x86_64.iso'		# ..
-URL='https://dl-cdn.alpinelinux.org/alpine/v3.15/releases/x86_64/alpine-extended-3.15.0-x86_64.iso'	# initial install: 948M
-URL='https://dl-cdn.alpinelinux.org/alpine/v3.15/releases/x86_64/alpine-standard-3.15.0-x86_64.iso'	# initial install: 948M
-ISO="$( basename "$URL" )"
-HDD='image.bin'
-
-wget -O "$ISO" "$URL"
-
-qemu-img create -f qcow2 "$HDD" 2G || \
-echo 'H4sICJln+mEAA2Zvby5iaW4A7c7NasJAFAbQifYBfIR5mkKXXXU9asRA/GE60uqTF7ppFKW6Mdllc87AhYH7Xb7317ffEMI0PJqdx/L//3KZt63qbvY7Z9fr6c9HF4nd1SaXY5w3ZVi6WuxyPuzL0MSk/i513qY2LlNJcdW09dPzoU2nY8z1arE7bMtn7/nQ9dikfe/ibb/K6Ss+dBqYBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGMFk7AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACMrro+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeOIPewYwSSAAAwA=' | base64 -d >"$HDD.gz" && gzip -d "$HDD.gz"
-oemu-system-x86_64 -m 256 -nic user -boot d -cdrom "$ISO" -hda "$HDD"
-
-# TODO: automate using 'expect'
-# login as root, execute 'SWAP_SIZE=0 setup-alpine', answer these questions:
-# q1: keyboard1           => de
-# q2: keyboard2           => de-nodeadkeys
-# q3: hostname            => foo
-# q4: network             => eth0 (enter)
-# q5: network             => dhcp (enter)
-# q6: network             => manual? (enter)
-# q7: password            => secret
-# q8: timezoneA           => Europe
-# q9: timezoneB           => Berlin
-# q10: proxy              => none (enter)
-# q11: use package mirror => default (enter)
-# q12: which sshserver    => dropbear
-# q13: use which hdd?     => sda
-# q14: hdd-usecase?       => sys
-# q15: really format hdd? => yes
-#
-# ... and execute 'poweroff'
-# resulting image = 125 megabytes
-
 OPTS="-nic user,hostfwd=tcp::10022-:22 -hda"
 qemu-system-x86_64 -cpu host -enable-kvm -display none -nodefaults -m 512 $OPTS $HDD
 ssh root@127.0.0.1 -p 10022
@@ -139,7 +103,6 @@ rc-update del syslog boot	# check with 'rc-status'
 rc-update del crond default
 rc-update del dropbear default
 rc-update del acpid		# still working 'poweroff'
-reboot
 
 # TODO: all in one setupfile:
 # wget -O setup.sh "github..." && sh setup

@@ -147,6 +147,7 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
 			pid=$!
 		fi
 
+								# TODO: sometimes firefox says "Unable to connect", but file /tmp/UA was written
 		type_url_into_bar 'http://127.0.0.1:8080'	# TODO: no search-suggestions, empty background
 		xdotool key Return
 
