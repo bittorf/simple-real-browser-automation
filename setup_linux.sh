@@ -5,6 +5,8 @@
 #
 # TODO: repeat on error?
 
+while ! ping -c1 8.8.8.8 >/dev/null 2>/dev/null; do sleep 1; done
+
 sed -i 's|^#\(.*/community$\)|\1|' /etc/apk/repositories
 apk update
 apk add zram-init && rc-update add zram-init default
