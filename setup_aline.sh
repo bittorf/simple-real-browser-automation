@@ -1,6 +1,6 @@
 #!/bin/sh
 
-URL='https://dl-cdn.alpinelinux.org/alpine/v3.12/releases/x86_64/alpine-virt-3.12.9-x86_64.iso'
+URL='https://dl-cdn.alpinelinux.org/alpine/v3.15/releases/x86_64/alpine-virt-3.15.0-x86_64.iso'
 ISO="$( basename "$URL" )"
 HDD='image.bin' && rm -f "$HDD"
 
@@ -11,12 +11,14 @@ echo 'H4sICJln+mEAA2Zvby5iaW4A7c7NasJAFAbQifYBfIR5mkKXXXU9asRA/GE60uqTF7ppFKW6Md
 
 # needs ~30 sec with KVM and ~130 sec without to produce a 175mb image
 FIFO="$( mktemp )" && rm -f "$FIFO" && mkfifo "$FIFO.in" "$FIFO.out"
-qemu-system-x86_64 -enable-kvm -m 96 -nic user -boot d -cdrom "$ISO" -hda "$HDD" -serial "pipe:$FIFO" -nographic &
+qemu-system-x86_64 -enable-kvm -m 96 -nic user -boot d -cdrom "$ISO" -hda "$HDD" -serial "pipe:$FIFO" -nodefaults -nographic &
 QEMU_PID=$!
 
+read -r PUBKEY <~/.ssh/id_rsa.pub
 say() { printf '%s\n' "$1" >"$FIFO.in"; }
 press_enter() { say ''; }
-zram_start() { say 'read _ TOTAL _ </proc/meminfo;modprobe zram;echo $((TOTAL*1024)) >/sys/block/zram0/disksize;mkswap /dev/zram0;swapon -d -p 5 /dev/zram0;cat /proc/swaps'; }
+zram_start() { say 'read _ TOTAL _ </proc/meminfo; modprobe zram; echo $((TOTAL*1024)) >/sys/block/zram0/disksize; mkswap /dev/zram0; swapon -d -p 5 /dev/zram0'; }
+install_publickey() { say "mount /dev/sda2 /mnt && mkdir -p /mnt/root/.ssh && echo '$PUBKEY' >/mnt/root/.ssh/authorized_keys && poweroff"; }
 
 I=999
 while read -r LINE; do
@@ -25,11 +27,11 @@ while read -r LINE; do
   # enforce baseline for some sections:
   case "$LINE" in
     *"(/dev/ttyS0)"*) I=0 ;;
-    *'obtained, lease time'*) I=100 ;;
-    *'password for root changed'*) I=200 ;;
+    *'obtained'*'lease time'*) I=100 ;;
     *'Edit /etc/apk/repositories'*) I=300 ;;
     *'Updating repository indexes'*) I=400 ;;
-    *'Installation is complete'*) I=500 ;;
+    *'Available disks are'*) I=500 ;;
+    *'Installation is complete'*) I=600 ;;
   esac
 
   printf '%s\n' "$LINE" | cut -b1-80 | hexdump -C
@@ -37,29 +39,23 @@ while read -r LINE; do
 
   case "$I" in
     1) say 'root' ;;				# login
-   11) zram_start ;;				# so 96mb RAM is enough
-   12) say 'export BOOT_SIZE=20 SWAP_SIZE=0 && setup-alpine && poweroff' ;;	# start setup
+   11) zram_start ;;				# so 96mb RAM are enough
+   12) say 'export QUIET=1 BOOT_SIZE=20 SWAP_SIZE=0 && setup-alpine -e' ;;	# start setup
    23) say 'de' ;;				# keymap
    25) say 'de-nodeadkeys' ;;			# keymap-subtype
    30) say 'hostname-auto' ;;			# hostname
    33) press_enter ;;				# network: bridges?
    34) press_enter ;;				# network: init eth0?
    35) press_enter ;;				# network: dhcp?
-  101) say 'alpine99foobar' ;;			# password for root
-  102) say 'alpine99foobar' ;;			# password repeat
-  103) say 'alpine99foobar' ;;			# password repeat
-  104) say 'alpine99foobar' ;;			# password repeat
-  106) say 'alpine99foobar' ;;			# password repeat
-  107) say 'alpine99foobar' ;;			# password repeat
-  108) say 'alpine99foobar' ;;			# password repeat
-  202) say 'Europe' ;;				# timezone
-  203) say 'Berlin' ;;				# timezone-subtype
-  208) press_enter ;;				# proxy?
+  100) say 'Europe' ;;				# timezone
+  101) say 'Berlin' ;;				# timezone-subtype
+  106) press_enter ;;				# proxy?
   301) press_enter ;;				# mirror?
   400) say 'dropbear' ;;			# which SSHd?
-  406) say 'sda' ;;				# which harddisk?
-  409) say 'sys' ;;				# which usecase?
-  430) say 'y' ;;				# really?
+  502) say 'sda' ;;				# which harddisk?
+  505) say 'sys' ;;				# which usecase?
+  508) say 'y' ;;				# really do it?
+  600) install_publickey ;;
   esac
 done <"$FIFO.out"
 
@@ -71,4 +67,5 @@ OPTS="-nic user,hostfwd=tcp::10022-:22 -hda"
 qemu-system-x86_64 -cpu host -enable-kvm -display none -nodefaults -m 512 $OPTS $HDD &
 
 while ! nc -z 127.0.0.1 10022; do sleep 1; done
+ssh-keygen -f ~/".ssh/known_hosts" -R "[127.0.0.1]:10022"
 ssh root@127.0.0.1 -p 10022 "wget https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main/setup_linux.sh && sh setup_linux.sh"
