@@ -5,7 +5,9 @@
 #
 # TODO: repeat on error?
 
-while ! ping -c1 8.8.8.8 >/dev/null 2>/dev/null; do sleep 1; done
+export PATH='/usr/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/sbin'
+
+while ! wget -qO - "http://detectportal.firefox.com"; do sleep 1; done
 
 sed -i 's|^#\(.*[0-9]/community$\)|\1|' /etc/apk/repositories	# enable community repo
 apk update
