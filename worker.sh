@@ -6,6 +6,8 @@ ARG="$2"
 OPTION="$3"
 
 case "$ACTION" in
+	include)
+	;;
 	action=*)
 		ACTION="${ACTION#*=}"	# action=foo => foo
 	;;
@@ -328,6 +330,8 @@ clearcache()
 }
 
 case "$ACTION" in
+	include)
+	;;
 	json_emit)
 		case "$ARG" in
 			"$FALLTROUGH")
