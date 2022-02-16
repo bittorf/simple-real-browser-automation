@@ -309,7 +309,7 @@ mouse_set_defaultpos()
 
 clearcache()
 {
-	xdotool key ctrl+shift+Delete	# GUI for cache
+	xdotool key ctrl+shift+Delete	# open GUI for cache
 	xdotool key shift+e		# select 'Everything'
 
 	xdotool mousemove "$(( X / 2 ))" '345'
@@ -327,6 +327,33 @@ clearcache()
 	xdotool key Return
 
 	mouse_set_defaultpos
+}
+
+check_valid_certificate()
+{
+	local pattern='Potential Security Risk Ahead'
+	local clipboard
+
+	case "$( cat /tmp/URL_EFFECTIVE )" in
+		https://*) ;;
+		*) echo 'null' && return ;;
+	esac
+
+	xdotool key ctrl+f						# open search-field
+	printf '%s' "$pattern" | xclip -in -selection 'clipboard'	# fill clipboard
+	xdotool key ctrl+v sleep 0.1					# paste clipboard
+	xdotool key Return
+	xdotool key Escape sleep 0.3					# remove search-field
+
+	printf '%s' '' | xclip -in  -selection 'clipboard'		# clear clipboard
+	xdotool key ctrl+c sleep 0.1					# copy (maybe) highlighted/found search-pattern
+
+	clipboard="$( xclip -out -selection 'clipboard' )"
+
+	case "$clipboard" in
+		"$pattern") echo 'false' ;;
+		*) echo 'true' ;;
+	esac
 }
 
 case "$ACTION" in
@@ -462,6 +489,7 @@ case "$ACTION" in
   "time_date": "$DATE $( tail -n1 /etc/localtime )",
   "url_userinput": "$( cat /tmp/URL )",
   "url_effective": "$( cat /tmp/URL_EFFECTIVE )",
+  "https_valid_certificate": $( cat /tmp/CERT ),
   "http_accept_language": "$( cat /tmp/ACCEPT_LANG )",
   "user_agent": "$( cat /tmp/UA )",
   "download_time_ms": $TIME_MS,
@@ -548,6 +576,8 @@ EOF
 		# try up to 2 times:
 		get_url >/tmp/URL_EFFECTIVE || \
 		get_url >/tmp/URL_EFFECTIVE
+
+		check_valid_certificate >/tmp/CERT
         ;;
         *)
 		cat <<EOF
