@@ -478,6 +478,12 @@ case "$ACTION" in
 		read -r COUNTRY </tmp/COUNTRY       || COUNTRY=
 		read -r TIME_MS </tmp/DOWNLOAD_TIME_MS
 
+		case "$FORMAT" in
+			png) MIME='image/png' ;;
+			jpg) MIME='image/jpeg' ;;
+			*) MIME= ;;
+		esac
+
 		# TODO: mimeheader and filename
 		# jq -r .screenshot | base64 -d
 
@@ -513,6 +519,7 @@ $(
   "browser_version": "$( cat /tmp/BROWSER )",
   "resolution": "$RESOLUTION",
   "screenshot_size": ${SIZE:-null},
+  "screenshot_mime": ${MIME:+\"}${MIME:-null}${MIME:+\"},
   "screenshot_format": ${FORMAT:+\"}${FORMAT:-null}${FORMAT:+\"},
   "screenshot_base64": ${BASE64:+\"}${BASE64:-null}${BASE64:+\"},
   "script": "https://github.com/bittorf/simple-real-browser-automation"
