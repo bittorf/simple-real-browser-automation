@@ -341,7 +341,7 @@ check_valid_certificate()		# FIXME: detect no-connect, e.g. nonexisting page: ht
 	esac
 
 	xdotool key ctrl+f						# open search-field
-	printf '%s' "$pattern" | xclip -in -selection 'clipboard'	# fill clipboard
+	printf '%s' "$pattern1" | xclip -in -selection 'clipboard'	# fill clipboard
 	xdotool key ctrl+v sleep 1					# paste clipboard
 	xdotool key Return						# ...and search! (if found, text is highlighted)
 	xdotool key Escape sleep 1					# remove search-field
