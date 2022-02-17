@@ -467,7 +467,13 @@ case "$ACTION" in
 				esac
 
 				# shellcheck disable=SC2086
-				if scrot --silent --overwrite /tmp/screen.jpg $SCROT_OPTS ; then
+				if scrot --silent --overwrite $SCROT_OPTS '/tmp/%%.jpg'; then
+					if mv '/tmp/%-thumb.jpg' /tmp/screen.jpg; then
+						rm -f '/tmp/%.jpg'
+					else
+						mv '/tmp/%.jpg' /tmp/screen.jpg
+					fi
+
 					echo 'jpg'                 >/tmp/screen.format
 					wc -c </tmp/screen.jpg     >/tmp/screen.size
 					base64 -w0 /tmp/screen.jpg >/tmp/screen.base64 && echo >>/tmp/screen.base64
