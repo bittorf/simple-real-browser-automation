@@ -331,8 +331,9 @@ clearcache()
 					# TODO: avoid search-box resizing content (performance issue)
 check_valid_certificate()		# FIXME: detect no-connect, e.g. nonexisting page: https://bittorf.jp
 {
-	local pattern=' Potential Security '	# e.g.: Potential Security Risk Ahead
-	local clipboard				#   or: Potential Security Issue | potential security
+	local pattern1=' Potential Security '	# e.g.: Potential Security Risk Ahead
+	local pattern2=' potential security '	#   or: Potential Security Issue | potential security
+	local clipboard
 
 	case "$( cat /tmp/URL_EFFECTIVE )" in
 		https://*) ;;
@@ -352,7 +353,8 @@ check_valid_certificate()		# FIXME: detect no-connect, e.g. nonexisting page: ht
 	clipboard="$( xclip -out -selection 'clipboard' )"
 
 	case "$clipboard" in
-		"$pattern") echo 'false' ;;
+		"$pattern1") echo 'false' ;;
+		"$pattern2") echo 'false' ;;
 		*) echo 'true' ;;
 	esac
 }
