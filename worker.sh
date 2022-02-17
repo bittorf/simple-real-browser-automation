@@ -457,8 +457,14 @@ case "$ACTION" in
 					exit $?
 				fi
 			;;
-                        *)
-				if scrot --silent --overwrite /tmp/screen.jpg --quality 25; then
+                        jpg|jpgthumb|*)
+				case "$ARG" in
+					jpgthumb) SCROT_OPTS='--quality 10 --thumb 25' ;;
+					       *) SCROT_OPTS='--quality 30' ;;
+				esac
+
+				# shellcheck disable=SC2086
+				if scrot --silent --overwrite /tmp/screen.jpg $SCROT_OPTS ; then
 					echo 'jpg'                 >/tmp/screen.format
 					wc -c </tmp/screen.jpg     >/tmp/screen.size
 					base64 -w0 /tmp/screen.jpg >/tmp/screen.base64 && echo >>/tmp/screen.base64
