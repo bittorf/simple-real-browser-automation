@@ -341,12 +341,13 @@ check_valid_certificate()
 
 	xdotool key ctrl+f						# open search-field
 	printf '%s' "$pattern" | xclip -in -selection 'clipboard'	# fill clipboard
-	xdotool key ctrl+v sleep 0.1					# paste clipboard
-	xdotool key Return
-	xdotool key Escape sleep 0.3					# remove search-field
+	xdotool key ctrl+v sleep 1					# paste clipboard
+	xdotool key Return						# ...and search! (if found, text is highlighted)
+	xdotool key Escape sleep 1					# remove search-field
+	xdotool key Escape sleep 1					# remove search-field (2nd try)
 
 	printf '%s' '' | xclip -in  -selection 'clipboard'		# clear clipboard
-	xdotool key ctrl+c sleep 0.1					# copy (maybe) highlighted/found search-pattern
+	xdotool key ctrl+c sleep 1					# copy (maybe) highlighted text
 
 	clipboard="$( xclip -out -selection 'clipboard' )"
 
