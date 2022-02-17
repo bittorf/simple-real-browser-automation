@@ -328,11 +328,11 @@ clearcache()
 
 	mouse_set_defaultpos
 }
-
-check_valid_certificate()
+					# TODO: avoid search-box resizing content (performance issue)
+check_valid_certificate()		# FIXME: detect no-connect, e.g. nonexisting page: https://bittorf.jp
 {
-	local pattern='Potential Security Risk Ahead'
-	local clipboard
+	local pattern=' Potential Security '	# e.g.: Potential Security Risk Ahead
+	local clipboard				#   or: Potential Security Issue | potential security
 
 	case "$( cat /tmp/URL_EFFECTIVE )" in
 		https://*) ;;
