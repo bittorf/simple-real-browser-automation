@@ -524,7 +524,7 @@ $(
  )
   "browser_version": "$( cat /tmp/BROWSER )",
   "resolution": "$RESOLUTION",
-  "screenshot_size": ${SIZE:-null},
+  "screenshot_filesize": ${SIZE:-null},
   "screenshot_mime": ${MIME:+\"}${MIME:-null}${MIME:+\"},
   "screenshot_format": ${FORMAT:+\"}${FORMAT:-null}${FORMAT:+\"},
   "screenshot_base64": ${BASE64:+\"}${BASE64:-null}${BASE64:+\"},
