@@ -25,8 +25,6 @@ read -r RESOLUTION 2>/dev/null </tmp/RESOLUTION || RESOLUTION=1280x720
 X=${RESOLUTION%x*}	# e.g. 800x600 => 800
 Y=${RESOLUTION#*x}	#              => 600
 
-alias explode='set -f;set +f --'
-
 isnumber()
 {
 	test 2>/dev/null "${1:-a}" -eq "${1##*[!0-9-]*}"
@@ -371,8 +369,9 @@ is_ip4()
 	local ip="$1"
 	local oldifs="$IFS"; IFS='.'
 
+	set -f
 	# shellcheck disable=SC2086
-	explode $ip
+	set +f -- $ip
 	IFS="$oldifs"
 
 	isnumber "$1${2:-x}${3:-x}${4:-x}" || return 1
