@@ -25,6 +25,13 @@ read -r RESOLUTION 2>/dev/null </tmp/RESOLUTION || RESOLUTION=1280x720
 X=${RESOLUTION%x*}	# e.g. 800x600 => 800
 Y=${RESOLUTION#*x}	#              => 600
 
+alias explode='set -f;set +f --'
+
+isnumber()
+{
+	test 2>/dev/null "${1:-a}" -eq "${1##*[!0-9-]*}"
+}
+
 json_emit()
 {
 	local key="$1"
@@ -359,6 +366,27 @@ check_valid_certificate()		# FIXME: detect no-connect, e.g. nonexisting page: ht
 	esac
 }
 
+is_ip4()
+{
+	local ip="$1"
+	local oldifs="$IFS"; IFS='.'
+
+	# shellcheck disable=SC2086
+	explode $ip
+	IFS="$oldifs"
+
+	isnumber "$1${2:-x}${3:-x}${4:-x}" || return 1
+
+	test "$1" -eq 0 -o "$1" -gt 254 \
+			-o "$2" -gt 255 \
+			-o "$3" -gt 255 \
+			-o "$4" -lt 0   \
+			-o "$4" -gt 254 \
+			-o -n "$5" && \
+				return 2
+	true
+}
+
 case "$ACTION" in
 	include)
 	;;
@@ -378,6 +406,11 @@ case "$ACTION" in
 		esac
 
 		json_emit "$INPUT" "$ARG" "$OPTION"
+	;;
+	dnsserver)
+		is_ip4 "$ARG" && {
+			sed -i "s/^nameserver.*/nameserver $ARG/" /etc/resolv.conf
+		}
 	;;
 	startvnc)
 		if pidof x11vnc >/dev/null; then
@@ -628,6 +661,7 @@ EOF
     "exampleB":       "               .../action=startssh",
     "exampleC":       "               .../action=startvnc",
     "exampleD":       "               .../action=sysinfo",
+    "exampleE":       "               .../dnsserver=1.2.3.4",
 
     "see": "https://github.com/bittorf/simple-real-browser-automation"
   }
