@@ -15,10 +15,9 @@ apk add zram-init && rc-update add zram-init default
 apk add xvfb
 apk add firefox-esr
 apk add scrot		# screenshots
-apk add perl
 apk add xdotool
 apk add xclip		# clipboard buffer copy/paste
-apk add coreutils	# needed for 'base64 -w0 file.bin'
+apk add coreutils	# only needed for 'base64 -w0 file.bin'
 apk add font-noto
 
 full()
@@ -29,6 +28,7 @@ full()
   apk add dnsmasq	# really?
   apk add file		# only for png_resolution_get()
   apk add imagemagick
+  apk add sshuttle	# poor mens VPN
 
   # visgrep:
   URL="http://intercity-vpn.de/alpine-usr-local-bin-visgrep"
@@ -40,6 +40,7 @@ full()
   mkdir -p /usr/local/lib/perl5/site_perl/Math
   wget -qO /usr/local/lib/perl5/site_perl/Math/Bezier.pm "$URL"
 
+  apk add perl
   URL="http://intercity-vpn.de/bezier.pl"
   wget -qO bezier.pl "$URL"
   chmod +x bezier.pl

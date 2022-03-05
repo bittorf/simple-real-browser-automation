@@ -11,7 +11,7 @@ echo 'H4sICJln+mEAA2Zvby5iaW4A7c7NasJAFAbQifYBfIR5mkKXXXU9asRA/GE60uqTF7ppFKW6Md
 
 # needs ~30 sec with KVM and ~130 sec without to produce a 175mb image
 FIFO="$( mktemp )" && rm -f "$FIFO" && mkfifo "$FIFO.in" "$FIFO.out"
-qemu-system-x86_64 -enable-kvm -m 96 -nic user -boot d -cdrom "$ISO" -hda "$HDD" -serial "pipe:$FIFO" -nodefaults -nographic &
+qemu-system-x86_64 -enable-kvm -m 128 -nic user -boot d -cdrom "$ISO" -hda "$HDD" -serial "pipe:$FIFO" -nodefaults -nographic &
 QEMU_PID=$!
 
 read -r PUBKEY <~/.ssh/id_rsa.pub
@@ -61,11 +61,17 @@ done <"$FIFO.out"
 
 while kill -0 "$QEMU_PID" 2>/dev/null; do sleep 1; done
 rm -f "$FIFI.in" "$FIFI.out"
+echo
+echo "[OK] ready stage1"
 
 # now boot with ssh-portforwarding:
 OPTS="-nic user,hostfwd=tcp::10022-:22 -hda"
 qemu-system-x86_64 -cpu host -enable-kvm -display none -nodefaults -m 512 $OPTS $HDD &
 
 while ! nc -z 127.0.0.1 10022; do sleep 1; done
+# TODO: accept any key (dont ask) + explain
 ssh-keygen -f ~/".ssh/known_hosts" -R "[127.0.0.1]:10022"
-ssh root@127.0.0.1 -p 10022 "wget https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main/setup_linux.sh && sh setup_linux.sh"
+ssh root@127.0.0.1 -p 10022 "wget https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main/setup_linux.sh && /bin/sh setup_linux.sh"
+
+echo
+echo "[OK] ready stage2"
