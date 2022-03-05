@@ -59,19 +59,23 @@ while read -r LINE; do
   esac
 done <"$FIFO.out"
 
+PORT=10022
+
 while kill -0 "$QEMU_PID" 2>/dev/null; do sleep 1; done
 rm -f "$FIFI.in" "$FIFI.out"
 echo
-echo "[OK] ready stage1"
+echo "[OK] ready stage1, now booting VM and connecting to localhost on port $PORT"
 
 # now boot with ssh-portforwarding:
-OPTS="-nic user,hostfwd=tcp::10022-:22 -hda"
+OPTS="-nic user,hostfwd=tcp::$PORT-:22 -hda"
 qemu-system-x86_64 -cpu host -enable-kvm -display none -nodefaults -m 512 $OPTS $HDD &
 
-while ! nc -z 127.0.0.1 10022; do sleep 1; done
-# TODO: accept any key (dont ask) + explain
-ssh-keygen -f ~/".ssh/known_hosts" -R "[127.0.0.1]:10022"
-ssh root@127.0.0.1 -p 10022 "wget https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main/setup_linux.sh && /bin/sh setup_linux.sh"
+while ! nc -z 127.0.0.1 $PORT; do sleep 1; done
+ssh-keygen -f ~/".ssh/known_hosts" -R "[127.0.0.1]:$PORT"
+echo "[OK] please accept new SSH-connection"
+
+SCRIPT="wget https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main/setup_linux.sh && /bin/sh setup_linux.sh"
+ssh -o StrictHostKeyChecking=accept-new root@127.0.0.1 -p $PORT "$SCRIPT"
 
 echo
 echo "[OK] ready stage2"
