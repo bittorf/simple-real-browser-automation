@@ -103,6 +103,9 @@ useragent_set()
 start_framebuffer()
 {
 	pidof Xvfb >/dev/null || {
+		# https://unix.stackexchange.com/questions/137567/glx-extension-not-working-properly-with-xvfb
+		# https://bugzilla.redhat.com/show_bug.cgi?id=904851
+#		nohup Xvfb $DISPLAY -screen 0 ${RESOLUTION}x24+32 +extension GLX +render -noreset &
 		nohup Xvfb $DISPLAY -screen 0 ${RESOLUTION}x24+32 &
 
 		sleep 1
@@ -386,6 +389,15 @@ is_ip4()
 	true
 }
 
+check_command()
+{
+	command -v "$1" >/dev/null && return 0
+	apk update
+	apk add "$1"
+	command -v "$1" >/dev/null
+}
+
+
 case "$ACTION" in
 	include)
 	;;
@@ -416,6 +428,7 @@ case "$ACTION" in
 			json_emit 'status' 'success' 'x11vnc already running'
 		else
 			start_framebuffer
+			check_command 'x11vnc'
 
 			if x11vnc -display :1 -cursor most -bg -nopw -xkb 2>/dev/null >/dev/null; then
 				json_emit 'status' 'success' 'x11vnc started'
