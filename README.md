@@ -61,6 +61,7 @@ curl "http://127.0.0.1:10080/help
 
 You can view screenshots using base64-decoder and 'feh' like this:
 ```
+curl "http://127.0.0.1:10080/screenshot=jpg"
 curl "http://127.0.0.1:10080/action=report" | jq -r .screenshot_base64 | base64 -d | feh -
 ```
 
