@@ -79,3 +79,4 @@ ssh -o StrictHostKeyChecking=accept-new root@127.0.0.1 -p $PORT "$SCRIPT"
 
 echo
 echo "[OK] ready stage2"
+echo "[OK] you can start the VM with: ./boot-vm.sh"
