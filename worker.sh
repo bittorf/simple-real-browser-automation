@@ -488,8 +488,8 @@ case "$ACTION" in
 		clearcache
 	;;
 	update)
-		# fix missing apk cache:
-		mkdir /run/apkcache && rm -fR /var/cache/apk && ln -s /run/apkcache /var/cache/apk
+		# fix missing apk cache once:
+		mkdir /run/apkcache 2>/dev/null && rm -fR /var/cache/apk && ln -s /run/apkcache /var/cache/apk
 
 		BASE="${ARG:-https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main}"
 
