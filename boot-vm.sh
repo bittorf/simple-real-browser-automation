@@ -21,8 +21,14 @@ PORTS="user,hostfwd=tcp::10022-:22,hostfwd=tcp::${PORT_HTTP}-:80,hostfwd=tcp::10
 SNAPSHOT="-snapshot"
 DEBUG='-display none'
 
-if grep -q 'vmx\|svm' /proc/cpuinfo; then
-	echo "[OK] trying to run qemu in KVM mode (mybe needs sudo)"
+supports_kvm()
+{
+	grep -q 'Microsoft' /proc/version && return 1	# tested on WSL1
+	grep -q 'vmx\|svm' /proc/cpuinfo
+}
+
+if supports_kvm; then
+	echo "[OK] trying to run qemu in KVM mode (maybe needs sudo)"
 	qemu-system-x86_64 -cpu host -enable-kvm $DEBUG -nodefaults -m $MEM $SNAPSHOT -nic "$PORTS" -hda "$IMAGE" &
 else
 	echo "[OK] trying to run qemu (slow mode, no suitable cpuflags found)"
@@ -30,7 +36,8 @@ else
 fi
 
 PID=$!
-echo "[OK] vm is booting"
+sleep 1
+echo "[OK] vm starts booting"
 
 vm_runs() { kill -0 "$PID" 2>/dev/null; }
 update_vm() { wget -T1 -qO - "http://127.0.0.1:$PORT_HTTP/action=update" >/dev/null; }
