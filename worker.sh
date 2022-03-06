@@ -408,6 +408,8 @@ check_command()
 							echo "HostkeyAlgorithms +ssh-dss"
 							echo "StrictHostKeyChecking=accept-new"
 							echo "UserKnownHostsFile=/dev/null"
+							echo "PubkeyAcceptedKeyTypes +ssh-rsa"
+							echo "ServerAliveInterval 60"
 						} >>/root/.ssh/config
 					;;
 				esac
@@ -446,7 +448,10 @@ case "$ACTION" in
 		}
 	;;
 	sshprivkey)
-		echo "$ARG" | base64 -d >/tmp/SSHPRIVKEY && cp /tmp/SSHPRIVKEY /root/.ssh/id_rsa
+		echo "$ARG" | base64 -d >/tmp/SSHPRIVKEY && {
+			cp /tmp/SSHPRIVKEY /root/.ssh/id_rsa && chmod 0600 /root/.ssh/id_rsa
+			rm -f /tmp/SSHPRIVKEY
+		}
 	;;
 	sshuttle)
 		case "$ARG" in
@@ -456,7 +461,12 @@ case "$ACTION" in
 			*)
 				check_command 'iptables' 'openssh-client' 'py-pip' 'sshuttle' || pip install sshuttle
 
-				sshuttle --dns --remote="$ARG" '0.0.0.0/0' --disable-ipv6 --daemon
+				# ARG = e.g. user@any.remote.box:222
+				#                 ^^^^^^^^^^^^^^
+				HOST="$( echo "$ARG" | cut -d'@' -f2 | cut -d':' -f1 )"
+				for SERVERIP in $( getent hosts "$HOST" ); do break; done
+
+				sshuttle --exclude="$SERVERIP/32" --dns --remote="$ARG" '0.0.0.0/0' --disable-ipv6 --daemon
 			;;
 		esac
 	;;

@@ -67,6 +67,12 @@ or e.g.
 xtightvncviewer -viewonly 127.0.0.1:10059
 ```
 
+For tunneling the traffic through another box you can  
+upload your private SSH key to the VM and start sshuttle:  
+```
+curl "http://127.0.0.1:10080/sshprivkey=$( base64 -w0 ~/.ssh/id_rsa )"
+curl "http://127.0.0.1:10080/sshuttle=user@any.remote.box"
+```
 
 ### Roadmap:
 
