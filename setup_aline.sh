@@ -72,7 +72,7 @@ qemu-system-x86_64 -cpu host -enable-kvm -display none -nodefaults -m 512 $OPTS 
 
 while ! nc -z 127.0.0.1 $PORT; do sleep 1; done
 ssh-keygen -f ~/".ssh/known_hosts" -R "[127.0.0.1]:$PORT"
-echo "[OK] please accept new SSH-connection"
+echo "[OK] when asked, please accept new SSH-connection"
 
 SCRIPT="wget https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main/setup_linux.sh && /bin/sh setup_linux.sh"
 ssh -o StrictHostKeyChecking=accept-new root@127.0.0.1 -p $PORT "$SCRIPT"
