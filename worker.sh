@@ -611,8 +611,8 @@ EOF
                 URL="$( url_decode "$ARG" )"
                 echo "$URL" >/tmp/URL
 
-		PUBIP="$( curl --silent ifconfig.me )"		# TODO: use same proxy like browser
-		COUNTRY="$( curl "http://ip-api.com/line/$PUBIP" | head -n2 | tail -n1 )"
+		PUBIP="$( wget -qO - 'http://ifconfig.me' )"		# TODO: use same proxy like browser
+		COUNTRY="$( wget -qO - "http://ip-api.com/line/$PUBIP" | head -n2 | tail -n1 )"
 		echo "$PUBIP"   >/tmp/PUBIP
 		echo "$COUNTRY" >/tmp/COUNTRY
 
