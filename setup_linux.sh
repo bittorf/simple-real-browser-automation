@@ -11,7 +11,9 @@ while ! wget -qO - "http://detectportal.firefox.com"; do sleep 1; done
 
 # move cache to ramdisk:
 mkdir /run/apkcache && rm -fR /var/cache/apk && ln -s /run/apkcache /var/cache/apk
-sed -i 's|^#\(.*[0-9]/community$\)|\1|' /etc/apk/repositories	# enable community repo
+# enable community repo:
+sed -i 's|^[# ]*\(.*[0-9]/community\)$|\1|' /etc/apk/repositories
+
 apk update
 apk add zram-init && rc-update add zram-init default
 apk add xvfb
