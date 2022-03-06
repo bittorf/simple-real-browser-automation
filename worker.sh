@@ -394,25 +394,8 @@ check_command()
 	local app="$1"
 
 	command -v "$app" >/dev/null && return 0
-
-	case "$app" in
-		sshuttle)
-			cp /etc/apk/repositories /tmp/apk.tmp
-			sed -i 's|^[# ]*\(.*edge/testing\)$|\1|' /etc/apk/repositories
-		;;
-	esac
-
 	apk update
 	apk add "$app"
-	test -f /tmp/apk.tmp && cp /tmp/apk.tmp /etc/apk/repositories && rm -f /tmp/apk.tmp
-
-	case "$app" in
-		sshuttle)
-			ln -n /usr/bin/python3 /usr/bin/python
-		;;
-	esac
-
-	command -v "$app" >/dev/null
 }
 
 
@@ -448,7 +431,10 @@ case "$ACTION" in
 			;;
 			*)
 				check_command 'iptables'
-				check_command 'sshuttle'
+				check_command 'sshuttle' || {
+					check_command 'py-pip'
+					pip install sshuttle
+				}
 
 				sshuttle --dns --remote="$ARG" '0.0.0.0/0'
 			;;
