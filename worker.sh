@@ -428,6 +428,9 @@ case "$ACTION" in
 		clearcache
 	;;
 	update)
+		# fix missing apk cache:
+		mkdir /run/apkcache && rm -fR /var/cache/apk && ln -s /run/apkcache /var/cache/apk
+
 		BASE="${ARG:-https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main}"
 
 		RC=0
@@ -634,8 +637,6 @@ EOF
 		check_valid_certificate >/tmp/CERT
         ;;
         *)
-		mkdir /run/apkcache && rm -fR /var/cache/apk && ln -s /run/apkcache /var/cache/apk
-
 		cat <<EOF
 
 {
