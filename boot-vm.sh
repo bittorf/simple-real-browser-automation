@@ -3,6 +3,11 @@
 ACTION="$1"	# <empty>, debug, writeable
 
 IMAGE='image.bin'
+[ -f "$IMAGE" ] || {
+	echo "can not found '$IMAGE', please run ./setup_aline.sh"
+	exit 1
+}
+
 MEM='768m'
 PORT_HTTP=10080
 PORTS="user,hostfwd=tcp::10022-:22,hostfwd=tcp::${PORT_HTTP}-:80,hostfwd=tcp::10059-:5900"
