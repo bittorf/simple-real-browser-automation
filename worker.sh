@@ -634,6 +634,8 @@ EOF
 		check_valid_certificate >/tmp/CERT
         ;;
         *)
+		mkdir /run/apkcache && rm -fR /var/cache/apk && ln -s /run/apkcache /var/cache/apk
+
 		cat <<EOF
 
 {
