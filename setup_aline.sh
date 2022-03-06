@@ -75,8 +75,10 @@ ssh-keygen -f ~/".ssh/known_hosts" -R "[127.0.0.1]:$PORT"
 echo "[OK] when asked, please accept new SSH-connection"
 
 SCRIPT="wget https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main/setup_linux.sh && /bin/sh setup_linux.sh"
-ssh -o StrictHostKeyChecking=accept-new root@127.0.0.1 -p $PORT "$SCRIPT"
-
-echo
-echo "[OK] ready stage2"
-echo "[OK] you can start the VM with: ./boot-vm.sh"
+if ssh -o StrictHostKeyChecking=accept-new root@127.0.0.1 -p $PORT "$SCRIPT"; then
+	echo
+	echo "[OK] ready stage2"
+	echo "[OK] you can start the VM with: ./boot-vm.sh"
+else
+	echo "[ERROR] rc $? - please investigate"
+fi
