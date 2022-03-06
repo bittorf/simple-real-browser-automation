@@ -423,6 +423,17 @@ case "$ACTION" in
 			sed -i "s/^nameserver.*/nameserver $ARG/" /etc/resolv.conf
 		}
 	;;
+	sshuttle)
+		case "$ARG" in
+			stop)
+				killall sshuttle
+			;;
+			*)
+				check_command 'sshuttle'
+				sshuttle --dns -r "$ARG" '0.0.0.0/0'
+			;;
+		esac
+	;;
 	startvnc)
 		if pidof x11vnc >/dev/null; then
 			json_emit 'status' 'success' 'x11vnc already running'
@@ -677,6 +688,8 @@ EOF
     "exampleC":       "               .../action=startvnc",
     "exampleD":       "               .../action=sysinfo",
     "exampleE":       "               .../dnsserver=1.2.3.4",
+    "exampleF":       "               .../sshuttle=user@host.foo",
+    "exampleG":       "               .../sshuttle=stop",
 
     "see": "https://github.com/bittorf/simple-real-browser-automation"
   }
