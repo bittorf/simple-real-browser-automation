@@ -400,7 +400,19 @@ check_command()
 		command -v "$app" >/dev/null || {
 			test -z "$uptodate" && apk update && uptodate='true'
 
-			apk add "$app"
+			apk add "$app" && {
+				case "$app" in
+					openssh-client)
+						{
+							echo "HostkeyAlgorithms +ssh-rsa"
+							echo "HostkeyAlgorithms +ssh-dss"
+							echo "StrictHostKeyChecking=accept-new"
+							echo "UserKnownHostsFile=/dev/null"
+						} >>/root/.ssh/config
+					;;
+				esac
+			}
+
 			command -v "$app" >/dev/null || rc=1
 		}
 	} done
