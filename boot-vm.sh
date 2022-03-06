@@ -15,7 +15,7 @@ IMAGE='image.bin'
 	exit 1
 }
 
-MEM='768m'
+MEM='512m'
 PORT_HTTP=10080
 PORTS="user,hostfwd=tcp::10022-:22,hostfwd=tcp::${PORT_HTTP}-:80,hostfwd=tcp::10059-:5900"
 SNAPSHOT="-snapshot"
@@ -32,7 +32,7 @@ if supports_kvm; then
 	qemu-system-x86_64 -cpu host -enable-kvm $DEBUG -nodefaults -m $MEM $SNAPSHOT -nic "$PORTS" -hda "$IMAGE" &
 else
 	echo "[OK] trying to run qemu (slow mode, no suitable cpuflags found)"
-	qemu-system-x86_64 -cpu host             $DEBUG -nodefaults -m $MEM $SNAPSHOT -nic "$PORTS" -hda "$IMAGE" &
+	qemu-system-x86_64                       $DEBUG -nodefaults -m $MEM $SNAPSHOT -nic "$PORTS" -hda "$IMAGE" &
 fi
 
 PID=$!
