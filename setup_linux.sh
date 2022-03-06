@@ -66,6 +66,8 @@ rc-update del crond default
 rc-update del dropbear default
 rc-update del acpid		# still working 'poweroff'
 
+printf '%s\n\n' 'Welcome to simple-real-browser-automation on Alpine Linux' >/etc/motd
+
 BASE='https://raw.githubusercontent.com/bittorf/simple-real-browser-automation/main'
 FILE='/etc/local.d/api.sh' && wget -O "$FILE" "$BASE/api.sh"    && chmod +x "$FILE"
 FILE='/root/worker.sh'     && wget -O "$FILE" "$BASE/worker.sh" && chmod +x "$FILE"
