@@ -545,6 +545,7 @@ case "$ACTION" in
   "https_valid_certificate": $( cat /tmp/CERT ),
   "http_accept_language": "$( cat /tmp/ACCEPT_LANG )",
   "user_agent": "$( cat /tmp/UA )",
+  "browser_version": "$( cat /tmp/BROWSER )",
   "download_time_ms": $TIME_MS,
   "download_size_bytes": $( cat /tmp/DOWNLOAD_BYTES ),
   "network_public_ip": ${PUBIP:+\"}${PUBIP:-null}${PUBIP:+\"},
@@ -563,7 +564,6 @@ $(
     case "$TRIPLE" in "$TIME_MS,"*) break ;; esac
   done
  )
-  "browser_version": "$( cat /tmp/BROWSER )",
   "resolution": "$RESOLUTION",
   "screenshot_filesize": ${SIZE:-null},
   "screenshot_mime": ${MIME:+\"}${MIME:-null}${MIME:+\"},
