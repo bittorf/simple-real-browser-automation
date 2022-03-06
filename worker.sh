@@ -391,13 +391,22 @@ is_ip4()
 
 check_command()
 {
-	local app="$1"
+	local list="$*"
 
-	command -v "$app" >/dev/null && return 0
-	apk update
-	apk add "$app"
+	local app rc=0
+	local uptodate=
+
+	for app in $list; do {
+		command -v "$app" >/dev/null || {
+			test -z "$uptodate" && apk update && uptodate='true'
+
+			apk add "$app"
+			command -v "$app" >/dev/null || rc=1
+		}
+	} done
+
+	return $rc
 }
-
 
 case "$ACTION" in
 	include)
@@ -430,11 +439,7 @@ case "$ACTION" in
 				killall sshuttle
 			;;
 			*)
-				check_command 'iptables'
-				check_command 'sshuttle' || {
-					check_command 'py-pip'
-					pip install sshuttle
-				}
+				check_command 'iptables' 'openssh-client' 'py-pip' 'sshuttle' || pip install sshuttle
 
 				sshuttle --dns --remote="$ARG" '0.0.0.0/0'
 			;;
