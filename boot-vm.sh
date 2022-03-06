@@ -36,6 +36,7 @@ vm_runs() { kill -0 "$PID"; }
 
 if vm_runs; then
 	while ! nc -z 127.0.0.1 $PORT_HTTP; do sleep 1; done
+	wget -qO - "http://127.0.0.1:$PORT_HTTP/action=update"
 
 	echo
 	echo "[OK] vm ready, you can enable SSH access with e.g.:"
