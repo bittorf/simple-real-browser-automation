@@ -445,6 +445,9 @@ case "$ACTION" in
 			sed -i "s/^nameserver.*/nameserver $ARG/" /etc/resolv.conf
 		}
 	;;
+	sshprivkey)
+		echo "$ARG" | base64 -d >/tmp/SSHPRIVKEY && cp /tmp/SSHPRIVKEY /root/.ssh/id_rsa
+	;;
 	sshuttle)
 		case "$ARG" in
 			stop)
@@ -581,9 +584,6 @@ case "$ACTION" in
 			*) MIME= ;;
 		esac
 
-		# TODO: mimeheader and filename
-		# jq -r .screenshot | base64 -d
-
 		if test -s /tmp/NETWORK_ACTION; then
 			cat >/tmp/REPORT <<EOF
 {
@@ -713,6 +713,7 @@ EOF
     "exampleE":       "               .../dnsserver=1.2.3.4",
     "exampleF":       "               .../sshuttle=user@host.foo",
     "exampleG":       "               .../sshuttle=stop",
+    "exampleH":       "               .../sshprivkey=base64-encoded-key",
 
     "see": "https://github.com/bittorf/simple-real-browser-automation"
   }
