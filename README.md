@@ -1,12 +1,13 @@
 ### Usage
 
 ```
-./boot-vm.sh	# needs ~5 sec till port 10080 is yours!
+./boot-vm.sh	# needs ~3 sec till port 10080 is yours!
 
 curl "http://127.0.0.1:10080/loadurl=http://c64.de"
 curl "http://127.0.0.1:10080/screenshot=jpg"
 curl "http://127.0.0.1:10080/action=report"
 ```
+
 outputs a JSON like:
 ```
 {
@@ -53,28 +54,31 @@ outputs a JSON like:
 }
 ```
 
-there is more help:
+There is more help:
 ```
 curl "http://127.0.0.1:10080/help
 ```
 
-OPTS="-nic user,hostfwd=tcp::10022-:22 -hda"
-qemu-system-x86_64 -cpu host -enable-kvm -display none -nodefaults -m 512 $OPTS $HDD
-ssh root@127.0.0.1 -p 10022
-
-# now snapshotted:
-OPTS="-nic user,hostfwd=tcp::10022-:22,hostfwd=tcp::10080-:80,hostfwd=tcp::10059-:5900 -hda"
-qemu-system-x86_64 -cpu host -enable-kvm -display none -nodefaults -m 512 -snapshot $OPTS $HDD
-
-# TODO: de, en-US, en    // HTTP_ACCEPT_LANGUAGE
-# e.g.: vncviewer 127.0.0.1:10059 or e.g. xtightvncviewer -viewonly 127.0.0.1:10059
-
-# TODO: https://zipcon.net/~swhite/docs/computers/browsers/fonttest.html
-# TODO: force geolocation and dont prompt when asked to query?
-# TODO: allow microphone (=file.wav) + camera (=stream.http or akvcam?) + e.g. jitsi-login
-# TODO: cleancache
-# TODO: netflix login
-# TODO: https://github.com/angrykoala/awesome-browser-automation
-# TODO: Cache-Control: no-cache ??? https://developer.mozilla.org/de/docs/Web/HTTP/Headers/Cache-Control
-
+You can view screenshots using base64-decoder and 'feh' like this:
 ```
+curl "http://127.0.0.1:10080/action=report" | jq -r .screenshot_base64 | base64 -d | feh -
+```
+
+You can connect via VNC like this:
+```
+curl "http://127.0.0.1:10080/action=startvnc"
+vncviewer 127.0.0.1:10059
+or e.g.
+xtightvncviewer -viewonly 127.0.0.1:10059
+```
+
+
+### Roadmap:
+
+* TODO: https://zipcon.net/~swhite/docs/computers/browsers/fonttest.html
+* TODO: force geolocation and dont prompt when asked to query?
+* TODO: allow microphone (=file.wav) + camera (=stream.http or akvcam?) + e.g. jitsi-login
+* TODO: cleancache
+* TODO: netflix login
+* TODO: https://github.com/angrykoala/awesome-browser-automation
+* TODO: Cache-Control: no-cache ??? https://developer.mozilla.org/de/docs/Web/HTTP/Headers/Cache-Control
