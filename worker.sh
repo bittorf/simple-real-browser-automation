@@ -441,7 +441,7 @@ case "$ACTION" in
 			*)
 				check_command 'iptables' 'openssh-client' 'py-pip' 'sshuttle' || pip install sshuttle
 
-				sshuttle --dns --remote="$ARG" '0.0.0.0/0'
+				sshuttle --dns --remote="$ARG" '0.0.0.0/0' --disable-ipv6 --daemon
 			;;
 		esac
 	;;

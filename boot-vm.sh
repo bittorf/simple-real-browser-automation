@@ -32,7 +32,7 @@ fi
 PID=$!
 echo "[OK] vm is booting"
 sleep 1
-vm_runs() { kill -0 "$PID"; }
+vm_runs() { kill -0 "$PID" 2>/dev/null; }
 
 if vm_runs; then
 	while ! nc -z 127.0.0.1 $PORT_HTTP; do sleep 1; done
