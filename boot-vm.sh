@@ -31,13 +31,12 @@ fi
 
 PID=$!
 echo "[OK] vm is booting"
-sleep 1
+
 vm_runs() { kill -0 "$PID" 2>/dev/null; }
+update_vm() { wget -T1 -qO - "http://127.0.0.1:$PORT_HTTP/action=update" >/dev/null; }
 
 if vm_runs; then
-	while ! nc -z 127.0.0.1 $PORT_HTTP; do sleep 1; done
-	wget -qO - "http://127.0.0.1:$PORT_HTTP/action=update" >/dev/null
-	wget -qO - "http://127.0.0.1:$PORT_HTTP/action=update" >/dev/null
+	while ! update_vm; do sleep 1; done; update_vm
 
 	echo
 	echo "[OK] vm ready, you can enable SSH access with e.g.:"
