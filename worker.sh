@@ -391,10 +391,22 @@ is_ip4()
 
 check_command()
 {
-	command -v "$1" >/dev/null && return 0
+	local app="$1"
+
+	command -v "$app" >/dev/null && return 0
+
+	case "$app" in
+		sshuttle)
+			cp /etc/apk/repositories /tmp/apk.tmp
+			sed -i 's|^[# ]*\(.*edge/testing\)$|\1|' /etc/apk/repositories
+		;;
+	esac
+
 	apk update
-	apk add "$1"
-	command -v "$1" >/dev/null
+	apk add "$app"
+	test -f /tmp/apk.tmp && cp /tmp/apk.tmp /etc/apk/repositories && rm -f /tmp/apk.tmp
+
+	command -v "$app" >/dev/null
 }
 
 
