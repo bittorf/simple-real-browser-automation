@@ -3,6 +3,13 @@
 ACTION="$1"	# <empty>, debug, writeable
 
 IMAGE='image.bin'
+
+[ -f "$IMAGE.xz-1" ] && {
+	echo "uncompressing $IMAGE.xz"
+	cat "$IMAGE.xz-"* >"$IMAGE.xz"
+	xz -d "$IMAGE.xz" && rm -f "$IMAGE.xz"*
+}
+
 [ -f "$IMAGE" ] || {
 	echo "can not found '$IMAGE', please run ./setup_aline.sh"
 	exit 1
