@@ -406,6 +406,12 @@ check_command()
 	apk add "$app"
 	test -f /tmp/apk.tmp && cp /tmp/apk.tmp /etc/apk/repositories && rm -f /tmp/apk.tmp
 
+	case "$app" in
+		sshuttle)
+			ln -n /usr/bin/python3 /usr/bin/python
+		;;
+	esac
+
 	command -v "$app" >/dev/null
 }
 
@@ -441,8 +447,10 @@ case "$ACTION" in
 				killall sshuttle
 			;;
 			*)
+				check_command 'iptables'
 				check_command 'sshuttle'
-				sshuttle --dns -r "$ARG" '0.0.0.0/0'
+
+				sshuttle --dns --remote="$ARG" '0.0.0.0/0'
 			;;
 		esac
 	;;

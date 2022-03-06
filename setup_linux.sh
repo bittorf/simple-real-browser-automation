@@ -33,6 +33,7 @@ full()
   apk add file		# only for png_resolution_get()
   apk add imagemagick
   apk add sshuttle	# poor mens VPN
+  apk add iptables	# for sshuttle
 
   # visgrep:
   URL="http://intercity-vpn.de/alpine-usr-local-bin-visgrep"
