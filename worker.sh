@@ -398,9 +398,15 @@ check_command()
 
 	for app in $list; do {
 		command -v "$app" >/dev/null || {
-			test -z "$uptodate" && apk update && uptodate='true'
+			case "$app" in
+				openssh-client)
+					ssh -V | grep -q ^'OpenSSH' && continue
+				;;
+			esac
 
 			apk add "$app" && {
+				test -z "$uptodate" && apk update && uptodate='true'
+
 				case "$app" in
 					openssh-client)
 						{
@@ -411,11 +417,13 @@ check_command()
 							echo "PubkeyAcceptedKeyTypes +ssh-rsa"
 							echo "ServerAliveInterval 60"
 						} >>/root/.ssh/config
+
+						continue	# dont check app
 					;;
 				esac
-			}
 
-			command -v "$app" >/dev/null || rc=1
+				command -v "$app" >/dev/null || rc=1
+			}
 		}
 	} done
 
