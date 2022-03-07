@@ -392,15 +392,16 @@ is_ip4()
 check_command()
 {
 	local list="$*"
-
-	local app rc=0
-	local uptodate=
+	local app uptodate=
 
 	for app in $list; do {
 		command -v "$app" >/dev/null || {
 			case "$app" in
 				openssh-client)
 					ssh -V 2>&1 | grep -q ^'OpenSSH' && continue
+				;;
+				py-pip)
+					command -v 'pip3' >/dev/null && continue
 				;;
 			esac
 
@@ -417,17 +418,11 @@ check_command()
 							echo "PubkeyAcceptedKeyTypes +ssh-rsa"
 							echo "ServerAliveInterval 60"
 						} >>/root/.ssh/config
-
-						continue	# dont check app
 					;;
 				esac
-
-				command -v "$app" >/dev/null || rc=1
 			}
 		}
 	} done
-
-	return $rc
 }
 
 case "$ACTION" in
