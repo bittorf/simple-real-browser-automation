@@ -400,7 +400,7 @@ check_command()
 		command -v "$app" >/dev/null || {
 			case "$app" in
 				openssh-client)
-					ssh -V | grep -q ^'OpenSSH' && continue
+					ssh -V 2>&1 | grep -q ^'OpenSSH' && continue
 				;;
 			esac
 
