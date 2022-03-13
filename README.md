@@ -74,6 +74,11 @@ curl "http://127.0.0.1:10080/sshprivkey=$( base64 -w0 ~/.ssh/id_rsa )"
 curl "http://127.0.0.1:10080/sshuttle=user@any.remote.box"
 ```
 
+### Why?
+
+* anti bot undetectable and scalable scraping infrastructure: https://abrahamjuliot.github.io/creepjs/
+
+
 ### Roadmap:
 
 * TODO: https://zipcon.net/~swhite/docs/computers/browsers/fonttest.html
