@@ -103,10 +103,7 @@ useragent_set()
 start_framebuffer()
 {
 	pidof Xvfb >/dev/null || {
-		# https://unix.stackexchange.com/questions/137567/glx-extension-not-working-properly-with-xvfb
-		# https://bugzilla.redhat.com/show_bug.cgi?id=904851
-#		nohup Xvfb $DISPLAY -screen 0 ${RESOLUTION}x24+32 +extension GLX +render -noreset &
-		nohup Xvfb $DISPLAY -screen 0 ${RESOLUTION}x24+32 &
+		nohup Xvfb $DISPLAY -screen 0 ${RESOLUTION}x24+32 +extension GLX +render -noreset &
 
 		sleep 1
 		while ! pidof Xvfb >/dev/null; do sleep 1; done
@@ -397,6 +394,9 @@ check_command()
 	for app in $list; do {
 		command -v "$app" >/dev/null || {
 			case "$app" in
+				mesa-dri-gallium)
+					test -f /usr/lib/xorg/modules/dri/swrast_dri.so && continue
+				;;
 				openssh-client)
 					ssh -V 2>&1 | grep -q ^'OpenSSH' && continue
 				;;
@@ -472,6 +472,9 @@ case "$ACTION" in
 				sshuttle --exclude="$SERVERIP/32" --dns --remote="$ARG" '0.0.0.0/0' --disable-ipv6 --daemon
 			;;
 		esac
+	;;
+	startwebgl)
+		test -f /usr/lib/xorg/modules/dri/swrast_dri.so || apk add mesa-dri-gallium
 	;;
 	startvnc)
 		if pidof x11vnc >/dev/null; then
@@ -727,6 +730,7 @@ EOF
     "exampleF":       "               .../sshuttle=user@host.foo",
     "exampleG":       "               .../sshuttle=stop",
     "exampleH":       "               .../sshprivkey=base64-encoded-key",
+    "exampleI":       "               .../action=startwebgl",
 
     "see": "https://github.com/bittorf/simple-real-browser-automation"
   }

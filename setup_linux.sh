@@ -34,6 +34,7 @@ full()
   apk add imagemagick
   apk add iptables	# for sshuttle
   apk add py-pip
+  apk add mesa-dri-gallium	# for webgl
   pip install sshuttle
 
   # visgrep:

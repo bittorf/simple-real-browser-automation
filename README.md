@@ -77,7 +77,7 @@ curl "http://127.0.0.1:10080/sshuttle=user@any.remote.box"
 ### Roadmap:
 
 * TODO: https://zipcon.net/~swhite/docs/computers/browsers/fonttest.html
-* TODO: https://get.webgl.org/
+* TODO: better readiness test like https://gtmetrix.com/
 * TODO: force geolocation and dont prompt when asked to query?
 * TODO: allow microphone (=file.wav) + camera (=stream.http or akvcam?) + e.g. jitsi-login
 * TODO: cleancache
