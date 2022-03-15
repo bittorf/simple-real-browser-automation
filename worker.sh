@@ -113,7 +113,7 @@ start_framebuffer()
 
 resetbrowser()		# TODO: clear cache + set lang + set UA
 {
-	local useragent pid=
+	local useragent location pid=
 
 	true >/tmp/BROWSER
 
@@ -128,6 +128,11 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
 
 	read -r useragent 2>/dev/null </tmp/UA_USERWISH && \
 	userjs_replace_or_add 'general.useragent.override' "$useragent"
+
+	read -r location 2>/dev/null </tmp/GEOLOCATION && {
+		userjs_replace_or_add 'geo.provider.network.url' "$location"
+		userjs_replace_or_add 'permission.default.geo' '1'
+	}
 
 	userjs_replace_or_add browser.urlbar.autoFill 'false'
 	userjs_replace_or_add services.sync.prefs.sync.browser.urlbar.maxRichResults 'false'
@@ -445,6 +450,18 @@ case "$ACTION" in
 
 		json_emit "$INPUT" "$ARG" "$OPTION"
 	;;
+	location)
+		# e.g. ARG=40.7590,-73.9845,666.0
+		LATLONACC="$( printf '%s\n' "$ARG" | sed -e 's/,/ /g' -e 's/[^0-9 \.-]//g' )"
+
+		# shellcheck disable=SC2086
+		set -- $LATLONACC
+
+		JSON="{\"location\": {\"lat\": $1, \"lng\": $2}, \"accuracy\": $3}"
+
+		printf '%s\n' "$JSON" | jq . >/dev/null && \
+			echo "data:application/json,$JSON" >/tmp/GEOLOCATION
+	;;
 	dnsserver)
 		is_ip4 "$ARG" && {
 			sed -i "s/^nameserver.*/nameserver $ARG/" /etc/resolv.conf
@@ -731,6 +748,7 @@ EOF
     "exampleG":       "               .../sshuttle=stop",
     "exampleH":       "               .../sshprivkey=base64-encoded-key",
     "exampleI":       "               .../action=startwebgl",
+    "exampleJ":       "               .../location=40.7590,-73.9845,666.0",
 
     "see": "https://github.com/bittorf/simple-real-browser-automation"
   }
