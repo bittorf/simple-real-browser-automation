@@ -134,6 +134,10 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
 		userjs_replace_or_add 'permission.default.geo' '1'
 	}
 
+	# netflix:
+	# media.eme.enabled = true
+	# media.eme.encrypted-media-encryption-scheme.enabled = true
+
 	userjs_replace_or_add browser.urlbar.autoFill 'false'
 	userjs_replace_or_add services.sync.prefs.sync.browser.urlbar.maxRichResults 'false'
 	userjs_replace_or_add browser.urlbar.maxRichResults '0'
@@ -141,7 +145,7 @@ resetbrowser()		# TODO: clear cache + set lang + set UA
 	userjs_replace_or_add browser.newtabpage.activity-stream.feeds.section.highlights 'false'
 	userjs_replace_or_add browser.newtabpage.activity-stream.showSearch 'false'
 	userjs_replace_or_add browser.newtabpage.activity-stream.feeds.snippets 'false'
-	userjs_replace_or_add webgl.force-enabled 'false'
+	userjs_replace_or_add webgl.force-enabled 'true'
 
         nohup firefox >>/tmp/debug-firefox.1 2>>/tmp/debug-firefox.2 &
 
