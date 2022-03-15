@@ -83,8 +83,9 @@ curl "http://127.0.0.1:10080/sshuttle=user@any.remote.box"
 
 * TODO: https://zipcon.net/~swhite/docs/computers/browsers/fonttest.html
 * TODO: better readiness test like https://gtmetrix.com/
+* TODO: compile v4l2loopback, needs vanilla (not virt) kernel
 * TODO: allow microphone (=file.wav) + camera (=stream.http or akvcam?) + e.g. jitsi-login
-* TODO: cleancache
-* TODO: netflix login
+* TODO: implement browser clearcache
+* TODO: netflix login (needs DRM blob and only works with glibc not musl?)
 * TODO: https://github.com/angrykoala/awesome-browser-automation
 * TODO: Cache-Control: no-cache ??? https://developer.mozilla.org/de/docs/Web/HTTP/Headers/Cache-Control
