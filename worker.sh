@@ -434,6 +434,24 @@ check_command()
 	} done
 }
 
+ip2country()
+{
+	local ip="$1"
+	local country file="/tmp/ip2country/${ip:-no_ip}"
+
+	if read -r country 2>/dev/null <"$file"; then
+		printf '%s\n' "$country"
+	else
+		mkdir -p /tmp/ip2country
+		country="$( wget -qO - "http://ip-api.com/line/$ip" | head -n2 | tail -n1 )"
+
+		test -n "$country" && {
+			printf '%s\n' "$country" >"$file"
+			printf '%s\n' "$country"
+		}
+	fi
+}
+
 case "$ACTION" in
 	include)
 	;;
@@ -699,7 +717,7 @@ EOF
                 echo "$URL" >/tmp/URL
 
 		PUBIP="$( wget -qO - 'http://ifconfig.me' )"		# TODO: use same proxy like browser
-		COUNTRY="$( wget -qO - "http://ip-api.com/line/$PUBIP" | head -n2 | tail -n1 )"
+		COUNTRY="$( ip2country "$PUBIP" )"
 		echo "$PUBIP"   >/tmp/PUBIP
 		echo "$COUNTRY" >/tmp/COUNTRY
 
