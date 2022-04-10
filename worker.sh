@@ -415,7 +415,7 @@ click_on_string()
 	xdotool key space		# switch on 'respect case'
 	xdotool key Escape		# hide search field
 
-	file1="$( mktemp ).png" && \
+	file1="$( mktemp -u -t tmp.file1-XXXXXX ).png" && \
 	scrot --silent --overwrite "$file1"
 
 	xdotool key ctrl+f		# open (f)ind field / searchbox
@@ -429,7 +429,7 @@ click_on_string()
 	xdotool key space		# switch off 'respect case'
 	xdotool key Escape		# hide search field
 
-	file2="$( mktemp ).png" && \
+	file2="$( mktemp -u -t tmp.file2-XXXXXX ).png" && \
 	scrot --silent --overwrite "$file2"
 
 	images_get_first_diff_xy "$file1" "$file2" && {
