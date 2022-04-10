@@ -395,6 +395,107 @@ is_ip4()
 	true
 }
 
+click_on_string()
+{
+	local pattern="$1"
+	local file1 file2
+
+	xdotool key ctrl+f		# open (f)ind field / searchbox
+	xdotool key BackSpace		# make sure we start empty
+
+        printf '%s' "$pattern " | xclip -in -selection 'clipboard'	# pattern+space into clipboard
+
+        xdotool key ctrl+v sleep 0.1	# paste clipboard
+	xdotool key BackSpace		# eat the trailing space
+	xdotool key Tab			# ...nagivate
+	xdotool key Tab			# ...to
+	xdotool key Tab			# ...next field:
+	xdotool key space		# switch off 'show all matches' => only the first
+	xdotool key Tab
+	xdotool key space		# switch on 'respect case'
+	xdotool key Escape		# hide search field
+
+	file1="$( mktemp )" && \
+	scrot --silent --overwrite "$file1.png"
+
+	xdotool key ctrl+f		# open (f)ind field / searchbox
+	xdotool key BackSpace		# delete content and so unselect pattern match highlight
+
+	xdotool key Tab
+	xdotool key Tab
+	xdotool key Tab
+	xdotool key space		# toggle: switch off 'show all matches'
+	xdotool key Tab
+	xdotool key space		# switch off 'respect case'
+	xdotool key Escape		# hide search field
+
+	file2="$( mktemp )" && \
+	scrot --silent --overwrite "$file2.png"
+
+	images_get_first_diff_xy "$file1" "$file2" && \
+	xdotool mousemove "$DIFF_X" "$DIFF_Y" click 1 mousemove restore
+}
+
+images_get_first_diff_xy()
+{
+	local file_image1="$1"
+	local file_image2="$2"
+
+	export DIFF_X=
+	export DIFF_Y=
+
+	local funcname='images_get_xy_1st_diff'
+	local c0='#c21343'
+	local c1='#c21342'	# default/red (was: #F3324AFF, but gimp shows #c21342)
+	local c2='#f3324a'
+	local c3='#c61746'
+	local c4='#f4334b'
+	local black='#000000'
+	local rc file_diff up col list_highlight_colors xy=
+
+	file_diff="$( mktemp -u -t tmp.$funcname-XXXXXX ).png"
+
+	# generate 'diff.png' with black (=interesting) pixels, fuzzy-ignore small glitches
+	check_command 'compare'
+	compare -highlight-color black -fuzz 40% "$file_image1" "$file_image2" "$file_diff"
+
+	check_command 'convert'
+	list_highlight_colors="$c0 $c1 $c2 $c3 $c4"
+	list_highlight_colors="$black"
+	for col in $list_highlight_colors; do {
+		# set all pixels which are not red to transparent/ignore them:
+		# output e.g. 358,200,srgba
+		xy="$( convert "$file_diff" -alpha set +transparent "$col" sparse-color: | cut -d"(" -f1 )"
+		[ -n "$xy" ] && break
+	} done
+
+	case "$xy" in
+		*','*)
+			rc=0
+		;;
+		*)
+			rc=1
+			xy=
+		;;
+	esac
+
+	rm -f "$file_diff"
+	DIFF_X="$( echo "$xy" | cut -d',' -f1 )"
+	DIFF_Y="$( echo "$xy" | cut -d',' -f2 )"
+
+	if [ "${DIFF_X:-99}" -lt 80 ]; then
+		# only the popped up searchfield was found:
+		DIFF_X=
+		DIFF_Y=
+		rc=2
+	else
+		DIFF_X=$(( DIFF_X + 3 ))	# add offset
+		DIFF_Y=$(( DIFF_Y + 3 ))
+	fi
+
+	test $rc -eq 0
+}
+
 check_command()
 {
 	local list="$*"
@@ -403,6 +504,9 @@ check_command()
 	for app in $list; do {
 		command -v "$app" >/dev/null || {
 			case "$app" in
+				compare|convert)
+					app='imagemagick'
+				;;
 				mesa-dri-gallium)
 					test -f /usr/lib/xorg/modules/dri/swrast_dri.so && continue
 				;;
