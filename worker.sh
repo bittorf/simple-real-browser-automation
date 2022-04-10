@@ -432,8 +432,10 @@ click_on_string()
 	file2="$( mktemp ).png" && \
 	scrot --silent --overwrite "$file2"
 
-	images_get_first_diff_xy "$file1" "$file2" && \
-	xdotool mousemove "$DIFF_X" "$DIFF_Y" click 1 mousemove restore
+	images_get_first_diff_xy "$file1" "$file2" && {
+		rm -f "$file1" "$file2"
+		xdotool mousemove "$DIFF_X" "$DIFF_Y" click 1 mousemove restore
+	}
 }
 
 images_get_first_diff_xy()
