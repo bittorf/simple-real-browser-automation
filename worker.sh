@@ -415,8 +415,8 @@ click_on_string()
 	xdotool key space		# switch on 'respect case'
 	xdotool key Escape		# hide search field
 
-	file1="$( mktemp )" && \
-	scrot --silent --overwrite "$file1.png"
+	file1="$( mktemp ).png" && \
+	scrot --silent --overwrite "$file1"
 
 	xdotool key ctrl+f		# open (f)ind field / searchbox
 	xdotool key BackSpace		# delete content and so unselect pattern match highlight
@@ -429,8 +429,8 @@ click_on_string()
 	xdotool key space		# switch off 'respect case'
 	xdotool key Escape		# hide search field
 
-	file2="$( mktemp )" && \
-	scrot --silent --overwrite "$file2.png"
+	file2="$( mktemp ).png" && \
+	scrot --silent --overwrite "$file2"
 
 	images_get_first_diff_xy "$file1" "$file2" && \
 	xdotool mousemove "$DIFF_X" "$DIFF_Y" click 1 mousemove restore
@@ -444,7 +444,6 @@ images_get_first_diff_xy()
 	export DIFF_X=
 	export DIFF_Y=
 
-	local funcname='images_get_xy_1st_diff'
 	local c0='#c21343'
 	local c1='#c21342'	# default/red (was: #F3324AFF, but gimp shows #c21342)
 	local c2='#f3324a'
@@ -453,7 +452,7 @@ images_get_first_diff_xy()
 	local black='#000000'
 	local rc file_diff up col list_highlight_colors xy=
 
-	file_diff="$( mktemp -u -t tmp.$funcname-XXXXXX ).png"
+	file_diff="$( mktemp -u -t tmp.diff-XXXXXX ).png"
 
 	# generate 'diff.png' with black (=interesting) pixels, fuzzy-ignore small glitches
 	check_command 'compare'
