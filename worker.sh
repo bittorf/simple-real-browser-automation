@@ -641,7 +641,7 @@ case "$ACTION" in
 	;;
 	clickstring)
 		PLAIN="$( url_decode "$ARG" )"
-		clickstring "$PLAIN"
+		clickstring "$PLAIN" || MESSAGE='something bad'
 	;;
 	update)
 		# fix missing apk cache once:
