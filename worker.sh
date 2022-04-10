@@ -414,6 +414,7 @@ click_on_string()
 	xdotool key Tab
 	xdotool key space		# switch on 'respect case'
 	xdotool key Escape		# hide search field
+	sleep 1				# it needs some time till searchbox floats away
 
 	file1="$( mktemp -u -t tmp.file1-XXXXXX ).png" && \
 	scrot --silent --overwrite "$file1"
@@ -428,6 +429,7 @@ click_on_string()
 	xdotool key Tab
 	xdotool key space		# switch off 'respect case'
 	xdotool key Escape		# hide search field
+	sleep 1				# it needs some time till searchbox floats away
 
 	file2="$( mktemp -u -t tmp.file2-XXXXXX ).png" && \
 	scrot --silent --overwrite "$file2"
