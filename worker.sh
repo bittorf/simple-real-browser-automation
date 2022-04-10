@@ -395,7 +395,7 @@ is_ip4()
 	true
 }
 
-click_on_string()
+clickstring()
 {
 	local pattern="$1"
 	local file1 file2
@@ -639,6 +639,10 @@ case "$ACTION" in
 	clearcache)
 		clearcache
 	;;
+	clickstring)
+		PLAIN="$( url_decode "$ARG" )"
+		clickstring "$PLAIN"
+	;;
 	update)
 		# fix missing apk cache once:
 		mkdir /run/apkcache 2>/dev/null && rm -fR /var/cache/apk && ln -s /run/apkcache /var/cache/apk
@@ -872,12 +876,14 @@ EOF
     "exampleB":       "               .../action=startssh",
     "exampleC":       "               .../action=startvnc",
     "exampleD":       "               .../action=sysinfo",
-    "exampleE":       "               .../dnsserver=1.2.3.4",
-    "exampleF":       "               .../sshuttle=user@host.foo",
-    "exampleG":       "               .../sshuttle=stop",
-    "exampleH":       "               .../sshprivkey=base64-encoded-key",
-    "exampleI":       "               .../action=startwebgl",
-    "exampleJ":       "               .../location=40.7590,-73.9845,666.0",
+    "exampleE":       "               .../action=clearcache",
+    "exampleF":       "               .../dnsserver=1.2.3.4",
+    "exampleG":       "               .../sshuttle=user@host.foo",
+    "exampleH":       "               .../sshuttle=stop",
+    "exampleI":       "               .../sshprivkey=base64-encoded-key",
+    "exampleJ":       "               .../action=startwebgl",
+    "exampleK":       "               .../location=40.7590,-73.9845,666.0",
+    "exampleL":       "               .../clickstring=Google Suche",
 
     "see": "https://github.com/bittorf/simple-real-browser-automation"
   }
