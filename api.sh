@@ -1,7 +1,8 @@
 #!/bin/sh
 {
 
-read -r _ QUERY _ && QUERY="${QUERY#?}"
+read -r _ QUERY _ && QUERY="${QUERY#?}"				# /foo => foo
+case "$QUERY" in '?'*) QUERY="${QUERY#?}" ;; esac		# ?foo => foo
 printf '%s\r\n%s\r\n' 'HTTP/1.1 200 OK' 'Connection: close'
 
 case "$QUERY" in
