@@ -50,7 +50,7 @@ outputs a JSON like:
 
 There is more help:
 ```
-curl "http://127.0.0.1:10080/help
+curl "http://127.0.0.1:10080/help"
 ```
 
 You can view screenshots using base64-decoder and 'feh' like this:

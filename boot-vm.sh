@@ -23,6 +23,7 @@ DEBUG='-display none'
 
 supports_kvm()
 {
+	test "$NOKVM" && return 1
 	grep -q 'Microsoft' /proc/version && return 1	# tested on WSL1
 	grep -q 'vmx\|svm' /proc/cpuinfo
 }
