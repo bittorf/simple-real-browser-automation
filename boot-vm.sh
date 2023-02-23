@@ -20,6 +20,7 @@ PORT_HTTP=10080
 PORTS="user,hostfwd=tcp::10022-:22,hostfwd=tcp::${PORT_HTTP}-:80,hostfwd=tcp::10059-:5900"
 SNAPSHOT="-snapshot"
 DEBUG='-display none'
+[ "$ACTION" = debug ] && DEBUG=
 
 supports_kvm()
 {
@@ -41,7 +42,7 @@ sleep 1
 echo "[OK] vm starts booting"
 
 vm_runs() { kill -0 "$PID" 2>/dev/null; }
-update_vm() { wget -T1 -qO - "http://127.0.0.1:$PORT_HTTP/action=update" >/dev/null; }
+update_vm() { wget -T1 -t1 -qO - "http://127.0.0.1:$PORT_HTTP/action=update" >/dev/null && return; echo "[DEBUG] waiting for API readiness"; false; }
 
 if vm_runs; then
 	while ! update_vm; do sleep 1; done; update_vm
