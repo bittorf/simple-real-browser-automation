@@ -57,6 +57,6 @@ if vm_runs; then
 
 	while vm_runs; do sleep 1; done
 else
-	echo "[ERROR] on startup, process-id $PID died"
+	echo "[ERROR] on startup, process-id $PID died - you can try e.g. NOKVM=true $0 $*"
 	exit 1
 fi
