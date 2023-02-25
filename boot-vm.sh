@@ -4,10 +4,10 @@ ACTION="$1"	# <empty>, debug, writeable
 
 IMAGE='image.bin'
 
-[ -f "$IMAGE.xz-1" ] && {
+[ -f "$IMAGE.xz-1" ] && [ ! -f "$IMAGE" ] && {
 	echo "uncompressing $IMAGE.xz"
 	cat "$IMAGE.xz-"* >"$IMAGE.xz"
-	xz -d "$IMAGE.xz" && rm -f "$IMAGE.xz"*
+	xz -d "$IMAGE.xz"
 }
 
 [ -f "$IMAGE" ] || {
@@ -20,7 +20,7 @@ PORT_HTTP=10080
 PORTS="user,hostfwd=tcp::10022-:22,hostfwd=tcp::${PORT_HTTP}-:80,hostfwd=tcp::10059-:5900"
 SNAPSHOT="-snapshot"
 DEBUG='-display none'
-[ "$ACTION" = debug ] && DEBUG=
+[ "$ACTION" = debug ] && DEBUG='-nographic'
 
 supports_kvm()
 {
@@ -34,7 +34,9 @@ if supports_kvm; then
 	qemu-system-x86_64 -cpu host -enable-kvm $DEBUG -nodefaults -m $MEM $SNAPSHOT -nic "$PORTS" -hda "$IMAGE" &
 else
 	echo "[OK] trying to run qemu (slow mode, no suitable cpuflags found)"
+set -x
 	qemu-system-x86_64                       $DEBUG -nodefaults -m $MEM $SNAPSHOT -nic "$PORTS" -hda "$IMAGE" &
+set +x
 fi
 
 PID=$!
