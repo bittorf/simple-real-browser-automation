@@ -462,10 +462,10 @@ images_get_first_diff_xy()
 	file_diff="$( mktemp -u -t tmp.diff-XXXXXX ).png"
 
 	# generate 'diff.png' with black (=interesting) pixels, fuzzy-ignore small glitches
-	check_command 'compare'
+	check_command 'compare' || return 1
 	compare -highlight-color black -fuzz 40% "$file_image1" "$file_image2" "$file_diff"
 
-	check_command 'convert'
+	check_command 'convert' || return 1
 	list_highlight_colors="$c0 $c1 $c2 $c3 $c4"
 	list_highlight_colors="$black"
 	for col in $list_highlight_colors; do {
@@ -508,11 +508,14 @@ check_command()
 	local app uptodate=
 
 	for app in $list; do {
+		case "$app" in
+			compare|convert)
+				app='imagemagick'
+			;;
+		esac
+
 		command -v "$app" >/dev/null || {
 			case "$app" in
-				compare|convert)
-					app='imagemagick'
-				;;
 				mesa-dri-gallium)
 					test -f /usr/lib/xorg/modules/dri/swrast_dri.so && continue
 				;;
@@ -524,7 +527,7 @@ check_command()
 				;;
 			esac
 
-			apk add "$app" && {
+			if apk add "$app"; then
 				test -z "$uptodate" && apk update && uptodate='true'
 
 				case "$app" in
@@ -539,7 +542,10 @@ check_command()
 						} >>/root/.ssh/config
 					;;
 				esac
-			}
+			else
+				MESSAGE="failed: apk add $app"
+				return 1
+			fi
 		}
 	} done
 }
