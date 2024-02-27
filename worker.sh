@@ -654,6 +654,10 @@ case "$ACTION" in
 		script_safe_replace '/root/worker.sh'     "$BASE/worker.sh" || RC=2
 		exit $RC
 	;;
+	type)
+		PLAIN="$( url_decode "$ARG" )"
+		xdotool type "$PLAIN" || MESSAGE='something bad'
+	;;
 	key)
 		xdotool key "$ARG"
 	;;
@@ -862,7 +866,7 @@ EOF
     "detected_key  ": "${ACTION:-<empty>}",
     "detected_value": "${ARG:-<empty>}",
 
-    "usage   ":       "curl http://server/key=value",
+    "usage   ":       "curl http://server/variable=value",
 
     "example1":       "               .../loadurl=google.de",
     "example2":       "               .../screenshot=jpg",
@@ -881,6 +885,7 @@ EOF
     "exampleD":       "               .../action=sysinfo",
     "exampleE":       "               .../action=clearcache",
     "exampleF":       "               .../key=Tab",
+    "exampleF":       "               .../type=any+text",
     "exampleF":       "               .../dnsserver=1.2.3.4",
     "exampleG":       "               .../sshuttle=user@host.foo",
     "exampleH":       "               .../sshuttle=stop",
