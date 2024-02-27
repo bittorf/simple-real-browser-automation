@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck shell=dash
 {
 
 INPUT="$1" && ACTION="$INPUT"
@@ -37,7 +38,7 @@ json_emit()
 	local message="$3"
 
 	case "$message" in
-		'') read -r message 2>/dev/null </tmp/MESSAGE ;;
+		'') test -s /tmp/MESSAGE && read -r message </tmp/MESSAGE && rm -f /tmp/MESSAGE ;;
 	esac
 
 	case "$message" in

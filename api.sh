@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck shell=dash
 {
 
 read -r _ QUERY _ && QUERY="${QUERY#?}"				# /foo => foo
