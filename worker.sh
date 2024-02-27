@@ -641,7 +641,11 @@ case "$ACTION" in
 	;;
 	clickstring)
 		PLAIN="$( url_decode "$ARG" )"
-		clickstring "$PLAIN" || MESSAGE='something bad'
+		if clickstring "$PLAIN"; then
+			MESSAGE="clicked at position $DIFF_Y and $DIFF_Y"
+		else
+			MESSAGE='something bad'
+		fi
 	;;
 	update)
 		# fix missing apk cache once:
