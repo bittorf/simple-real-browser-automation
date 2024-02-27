@@ -37,9 +37,7 @@ json_emit()
 	local value="$2"
 	local message="$3"
 
-	case "$message" in
-		'') test -s /tmp/MESSAGE && read -r message </tmp/MESSAGE && rm -f /tmp/MESSAGE ;;
-	esac
+	test -s /tmp/MESSAGE && message="message - $( cat /tmp/MESSAGE )" && rm -f /tmp/MESSAGE
 
 	case "$message" in
 		'') addbytes=9 ;;
