@@ -480,7 +480,7 @@ images_get_first_diff_xy()
 			rc=0
 		;;
 		*)
-			rc=1
+			rc=1 && MESSAGE='no xy found'
 			xy=
 		;;
 	esac
@@ -490,7 +490,7 @@ images_get_first_diff_xy()
 	DIFF_Y="$( echo "$xy" | cut -d',' -f2 )"
 
 	if [ "${DIFF_X:-99}" -lt 80 ]; then
-		# only the popped up searchfield was found:
+		MESSAGE='only the popped up searchfield was found'
 		DIFF_X=
 		DIFF_Y=
 		rc=2
