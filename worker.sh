@@ -654,6 +654,9 @@ case "$ACTION" in
 		script_safe_replace '/root/worker.sh'     "$BASE/worker.sh" || RC=2
 		exit $RC
 	;;
+	key)
+		xdotool key "$ARG"
+	;;
 	useragent)
 		PLAIN="$( url_decode "$ARG" )"
 		useragent_set "$PLAIN"
@@ -877,6 +880,7 @@ EOF
     "exampleC":       "               .../action=startvnc",
     "exampleD":       "               .../action=sysinfo",
     "exampleE":       "               .../action=clearcache",
+    "exampleF":       "               .../key=Tab",
     "exampleF":       "               .../dnsserver=1.2.3.4",
     "exampleG":       "               .../sshuttle=user@host.foo",
     "exampleH":       "               .../sshuttle=stop",
