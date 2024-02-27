@@ -26,7 +26,7 @@ case "$QUERY" in
 	;;
 	*)
 		/root/worker.sh "$QUERY"
-		case "$QUERY" in action=report|action=startvnc) ;; *) /root/worker.sh json_emit "$?" "$QUERY" "$MESSAGE" ;; esac
+		case "$QUERY" in action=report|action=startvnc) ;; *) /root/worker.sh json_emit "$?" "$QUERY" ;; esac
 	;;
 esac
 
