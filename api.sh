@@ -20,7 +20,7 @@ case "$QUERY" in
 		/root/worker.sh "$QUERY" >/dev/null 2>&1 & disown
 		/root/worker.sh json_emit "$?" "$QUERY"
 	;;
-	loadurl=*)
+	loadurl=*|loadurlfast=)
 		pidof firefox >/dev/null || /root/worker.sh 'resetbrowser' >/dev/null 2>&1 & disown
 		/root/worker.sh "$QUERY"
 		/root/worker.sh json_emit "$?" "$QUERY"

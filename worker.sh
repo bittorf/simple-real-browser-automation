@@ -831,6 +831,13 @@ EOF
         geturl)
                 geturl
         ;;
+        loadurlfast)
+                ID="$( xdotool search --classname Navigator )" || resetbrowser
+                URL="$( url_decode "$ARG" )"
+		mouse_set_defaultpos
+		type_url_into_bar "$URL"
+		xdotool key Return
+	;;
         loadurl)
 		true >/tmp/screen.png
 		true >/tmp/screen.jpg
@@ -877,8 +884,9 @@ EOF
     "usage   ":       "curl http://server/variable=value",
 
     "example1":       "               .../loadurl=google.de",
-    "example2":       "               .../screenshot=jpg",
-    "example3":       "               .../action=report",
+    "example2":       "               .../loadurlfast=google.de",
+    "example3":       "               .../screenshot=jpg",
+    "example4":       "               .../action=report",
 
     "example4":       "               .../language=zh-CN",
     "example5":       "               .../useragent=Mozilla/5.0+(linux)",
