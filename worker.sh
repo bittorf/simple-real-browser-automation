@@ -647,11 +647,8 @@ case "$ACTION" in
 	;;
 	clickstring)
 		PLAIN="$( url_decode "$ARG" )"
-		if clickstring "$PLAIN"; then
-			MESSAGE="clicked at position $DIFF_Y and $DIFF_Y"
-		else
-			MESSAGE='something bad'
-		fi
+		MESSAGE='something bad'
+		clickstring "$PLAIN" && MESSAGE="clicked at position $DIFF_Y and $DIFF_Y"
 	;;
 	update)
 		# fix missing apk cache once:
@@ -666,7 +663,8 @@ case "$ACTION" in
 	;;
 	type)
 		PLAIN="$( url_decode "$ARG" )"
-		xdotool type "$PLAIN" || MESSAGE='something bad'
+		MESSAGE='something bad'
+		xdotool type "$PLAIN" && MESSAGE=
 	;;
 	key)
 		xdotool key "$ARG"
