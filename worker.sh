@@ -106,7 +106,7 @@ useragent_set()
 start_framebuffer()
 {
 	pidof Xvfb >/dev/null || {
-		nohup Xvfb $DISPLAY -screen 0 ${RESOLUTION}x24+32 +extension GLX +render -noreset &
+		nohup Xvfb $DISPLAY -screen 0 "${RESOLUTION}x24+32" +extension GLX +render -noreset &
 
 		sleep 1
 		while ! pidof Xvfb >/dev/null; do sleep 1; done
@@ -915,5 +915,7 @@ EOF
 	;;
 esac
 
+RC=$? && rememberRC() { return "$RC"; }
 [ -n "$MESSAGE" ] && echo "$MESSAGE" >/tmp/MESSAGE
+rememberRC
 }
