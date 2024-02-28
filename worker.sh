@@ -508,12 +508,6 @@ check_command()
 	local app uptodate=
 
 	for app in $list; do {
-		case "$app" in
-			compare|convert)
-				app='imagemagick'
-			;;
-		esac
-
 		command -v "$app" >/dev/null || {
 			case "$app" in
 				mesa-dri-gallium)
@@ -524,6 +518,9 @@ check_command()
 				;;
 				py-pip)
 					command -v 'pip3' >/dev/null && continue
+				;;
+				compare|convert)
+					app='imagemagick'
 				;;
 			esac
 
