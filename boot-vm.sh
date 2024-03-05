@@ -30,35 +30,45 @@ supports_kvm()
 }
 
 if supports_kvm; then
-	echo "[OK] trying to run qemu in KVM mode (maybe needs sudo)"
+	echo "[OK] trying to run QEMU in KVM mode (maybe needs sudo)"
+	# shellcheck disable=SC2086
 	qemu-system-x86_64 -cpu host -enable-kvm $DEBUG -nodefaults -m $MEM $SNAPSHOT -nic "$PORTS" -hda "$IMAGE" &
 else
-	echo "[OK] trying to run qemu (slow mode, no suitable cpuflags found)"
+	echo "[OK] trying to run QEMU (slow mode, no suitable CPU-flags found)"
 set -x
+	# shellcheck disable=SC2086
 	qemu-system-x86_64                       $DEBUG -nodefaults -m $MEM $SNAPSHOT -nic "$PORTS" -hda "$IMAGE" &
 set +x
 fi
 
 PID=$!
 sleep 1
-echo "[OK] vm starts booting"
+echo "[OK] VM starts booting"
+
+http_get() {
+	if command -v 'curl' >/dev/null; then
+		curl --silent --max-time 1 --output /dev/null "$1"
+	else
+		wget -T1 -t1 -qO /dev/null "$1"
+	fi
+}
 
 vm_runs() { kill -0 "$PID" 2>/dev/null; }
-update_vm() { wget -T1 -t1 -qO - "http://127.0.0.1:$PORT_HTTP/action=update" >/dev/null && return; echo "[DEBUG] waiting for API readiness"; false; }
+update_vm() { http_get "http://127.0.0.1:$PORT_HTTP/action=update" && return; echo "[DEBUG] waiting for API readiness"; false; }
 
 if vm_runs; then
 	while ! update_vm; do sleep 1; done; update_vm
 
 	echo
-	echo "[OK] vm ready, you can enable SSH access with e.g.:"
+	echo "[OK] VM is ready, you can enable SSH access with:"
 	echo "     curl http://127.0.0.1:$PORT_HTTP/action=startssh"
-	echo "  or speak with the API with e.g.:"
+	echo "  or speak with the API like:"
 	echo "     curl http://127.0.0.1:$PORT_HTTP/help"
 	echo
-	echo "(waiting for end of qemu with process-id $PID, e.g. with CTRL+C)"
+	echo "(waiting for end of QEMU with process-ID $PID, e.g. with CTRL+C)"
 
 	while vm_runs; do sleep 1; done
 else
-	echo "[ERROR] on startup, process-id $PID died - you can try e.g. NOKVM=true $0 $*"
+	echo "[ERROR] on startup, process-ID $PID died - you can try e.g. NOKVM=true $0 $*"
 	exit 1
 fi
