@@ -376,6 +376,17 @@ check_valid_certificate()		# FIXME: detect no-connect, e.g. nonexisting page: ht
 	esac
 }
 
+mark_all_and_copypaste()
+{
+	xdotool key ctrl+a sleep 1	# mark all
+
+	printf '%s' '' | xclip -in  -selection 'clipboard'		# clear clipboard
+	xdotool key ctrl+c sleep 1					# copy (maybe) highlighted text
+
+	clipboard="$( xclip -out -selection 'clipboard' )"
+	export MESSAGE="$clipboard"
+}
+
 is_ip4()
 {
 	local ip="$1"
@@ -650,6 +661,9 @@ case "$ACTION" in
 		MESSAGE='something bad'
 		clickstring "$PLAIN" && MESSAGE="clicked at position $DIFF_Y and $DIFF_Y"
 	;;
+	copypaste)
+		mark_all_and_copypaste
+	;;
 	update)
 		# fix missing apk cache once:
 		mkdir /run/apkcache 2>/dev/null && rm -fR /var/cache/apk && ln -s /run/apkcache /var/cache/apk
@@ -900,15 +914,16 @@ EOF
     "exampleC":       "               .../action=startvnc",
     "exampleD":       "               .../action=sysinfo",
     "exampleE":       "               .../action=clearcache",
-    "exampleF":       "               .../key=Tab",
-    "exampleF":       "               .../type=any+text",
-    "exampleF":       "               .../dnsserver=1.2.3.4",
-    "exampleG":       "               .../sshuttle=user@host.foo",
-    "exampleH":       "               .../sshuttle=stop",
-    "exampleI":       "               .../sshprivkey=base64-encoded-key",
-    "exampleJ":       "               .../action=startwebgl",
-    "exampleK":       "               .../location=40.7590,-73.9845,666.0",
-    "exampleL":       "               .../clickstring=Google Suche",
+    "exampleF":       "               .../action=copypaste",
+    "exampleG":       "               .../key=Tab",
+    "exampleH":       "               .../type=any+text",
+    "exampleI":       "               .../dnsserver=1.2.3.4",
+    "exampleJ":       "               .../sshuttle=user@host.foo",
+    "exampleK":       "               .../sshuttle=stop",
+    "exampleL":       "               .../sshprivkey=base64-encoded-key",
+    "exampleM":       "               .../action=startwebgl",
+    "exampleN":       "               .../location=40.7590,-73.9845,666.0",
+    "exampleO":       "               .../clickstring=Google Suche",
 
     "see": "https://github.com/bittorf/simple-real-browser-automation"
   }
