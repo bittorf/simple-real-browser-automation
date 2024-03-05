@@ -383,8 +383,8 @@ mark_all_and_copypaste()
 	printf '%s' '' | xclip -in  -selection 'clipboard'		# clear clipboard
 	xdotool key ctrl+c sleep 1					# copy (maybe) highlighted text
 
-	clipboard="$( xclip -out -selection 'clipboard' )"
-	export MESSAGE="$clipboard"
+	clipboard="$( xclip -out -selection 'clipboard' | base64 -w0 )"
+	export MESSAGE="base64: $clipboard"
 }
 
 is_ip4()
