@@ -869,9 +869,11 @@ EOF
 		echo "$COUNTRY" >/tmp/COUNTRY
 
 		# resize max to fit screen:
+		I=10
 		while ! test "$GEOMETRY" = "$RESOLUTION"; do {
-			for GEOMETRY in $( xdotool getwindowgeometry "$ID" ); do :; done
+			I=$(( I - 1 )) && test "$I" = 0 && break
 			xdotool windowsize "$ID" "$X" "$Y"
+			for GEOMETRY in $( xdotool getwindowgeometry "$ID" ); do :; done
 		} done
 
 		mouse_set_defaultpos
