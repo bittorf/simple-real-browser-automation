@@ -721,6 +721,25 @@ ip2country()
 	fi
 }
 
+mousemove_humanlike()
+{
+	local dest_x="$1"
+	local dest_y="$2"
+	local X Y tempfile
+
+	# get coords now:
+	# shellcheck disable=SC2046
+	eval $( xdotool getmouselocation --shell )	# X, Y, SCREEN, WINDOW
+
+	tempfile="$( mktemp )" || return 1
+
+	check_command 'bezier'
+	~/bezier.pl "$X" "$Y" "$dest_x" "$dest_y" >"$tempfile" && {
+		# shellcheck disable=SC1090
+		. "$tempfile" && rm -f "$tempfile"
+	}
+}
+
 case "$ACTION" in
 	include)
 	;;
@@ -806,11 +825,8 @@ case "$ACTION" in
 		for DEST_X in $PLAIN; do break; done
 		for DEST_Y in $PLAIN; do true; done
 
-		# shellcheck disable=SC2046
-		eval $( xdotool getmouselocation --shell )	# X, Y, SCREEN, WINDOW
-		check_command 'bezier'
-		~/bezier.pl "$X" "$Y" "$DEST_X" "$DEST_Y"
-		xdotool click 1
+		mousemove_humanlike "$DEST_X" "$DEST_Y" && \
+			xdotool click 1
 	;;
 	clickstring)
 		PLAIN="$( url_decode "$ARG" )"
