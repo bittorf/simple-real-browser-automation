@@ -500,7 +500,7 @@ images_get_first_diff_xy()
 	DIFF_X="$( echo "$xy" | cut -d',' -f1 )"
 	DIFF_Y="$( echo "$xy" | cut -d',' -f2 )"
 
-	if [ "${DIFF_X:-99}" -lt 80 -a "$DIFF_Y" -lt 20 ]; then
+	if [ "${DIFF_X:-99}" -lt 80 ] && [ "$DIFF_Y" -lt 20 ]; then
 		MESSAGE="only the popped up searchfield was found: diffXY: $DIFF_X/$DIFF_Y"
 		DIFF_X=
 		DIFF_Y=
@@ -511,6 +511,143 @@ images_get_first_diff_xy()
 	fi
 
 	test $rc -eq 0
+}
+
+bezier_script()
+{
+	cat <<EOF
+#!/usr/bin/perl -w
+
+use strict;
+use Math::Bezier;
+
+my \$x0 = \$ARGV[0];
+my \$y0 = \$ARGV[1];
+
+my \$MAXX = \$ARGV[2];
+my \$MAXY = \$ARGV[3];
+
+my \$x1 = \$MAXX*0.5;
+my \$y1 = 0.0000;
+
+my \$x2 = \$MAXX;
+my \$y2 = \$MAXY;
+
+my @control = ( \$x0, \$y0, \$x1, \$y1, \$x2, \$y2 );
+
+my \$bezier = Math::Bezier->new(@control);
+
+printf "#!/bin/sh\n\n";
+printf "xdotool \\\n";
+
+for ( my \$i = 0; \$i < (\$MAXX+1); \$i++) {
+	my \$divisor = \$i / \$MAXX;
+	my ( \$x, \$y )  = \$bezier->point(\$divisor);
+
+	if ( \$x == \$MAXX && \$y == \$MAXY )
+	{
+		printf "mousemove --sync %.0f %.0f \n", \$x, \$y;
+	}
+	else
+	{
+		printf "mousemove %.0f %.0f sleep 0.001 \\\n", \$x, \$y;
+	}
+}
+EOF
+}
+
+bezier_base64()		# Bezier.pm from libmath-bezier-perl_0.01-2.1_all.deb
+{
+# Math::Bezier
+#
+# Module for the solution of Bezier curves based on the algorithm
+# presented by Robert D. Miller in Graphics Gems V, "Quick and Simple
+# Bezier Curve Drawing".
+#
+# Andy Wardley <abw@kfs.org>
+#
+# Copyright (C) 2000 Andy Wardley.  All Rights Reserved.
+# ...
+	cat <<EOF
+Iz09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQojIE1hdGg6OkJlemllcgoj
+CiMgTW9kdWxlIGZvciB0aGUgc29sdXRpb24gb2YgQmV6aWVyIGN1cnZlcyBiYXNlZCBvbiB0aGUgYWxnb3JpdGhtIAojIHByZXNlbnRlZCBieSBSb2JlcnQg
+RC4gTWlsbGVyIGluIEdyYXBoaWNzIEdlbXMgViwgIlF1aWNrIGFuZCBTaW1wbGUKIyBCZXppZXIgQ3VydmUgRHJhd2luZyIuCiMKIyBBbmR5IFdhcmRsZXkg
+PGFid0BrZnMub3JnPgojCiMgQ29weXJpZ2h0IChDKSAyMDAwIEFuZHkgV2FyZGxleS4gIEFsbCBSaWdodHMgUmVzZXJ2ZWQuCiMKIyBUaGlzIG1vZHVsZSBp
+cyBmcmVlIHNvZnR3YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IKIyBtb2RpZnkgaXQgdW5kZXIgdGhlIHNhbWUgdGVybXMgYXMgUGVybCBp
+dHNlbGYuCiMKIz09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQoKcGFja2Fn
+ZSBNYXRoOjpCZXppZXI7Cgp1c2Ugc3RyaWN0Owp1c2UgdmFycyBxdyggJFZFUlNJT04gKTsKCiRWRVJTSU9OID0gJzAuMDEnOwoKdXNlIGNvbnN0YW50IFgg
+ID0+IDA7CnVzZSBjb25zdGFudCBZICA9PiAxOwp1c2UgY29uc3RhbnQgQ1ggPT4gMjsKdXNlIGNvbnN0YW50IENZID0+IDM7CgoKIy0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIG5ldygkeDEsICR5MSwgJHgyLCAkeTIsIC4uLiwg
+JHhuLCAkeW4pCiMKIyBDb25zdHJ1Y3RvciBtZXRob2QgdG8gY3JlYXRlIGEgbmV3IEJlemllciBjdXJ2ZSBmb3JtLgojLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgpzdWIgbmV3IHsKICAgIG15ICRjbGFzcyA9IHNoaWZ0OwogICAg
+bXkgQHBvaW50cyA9IHJlZiAkX1swXSBlcSAnQVJSQVknID8gQHskX1swXX0gOiBAXzsKICAgIG15ICRzaXplID0gc2NhbGFyIEBwb2ludHM7CiAgICBteSBA
+Y3RybDsKCiAgICBkaWUgImludmFsaWQgY29udHJvbCBwb2ludHMsIGV4cGVjdHMgKHgxLCB5MSwgeDIsIHkyLCAuLi4sIHhuLCB5bilcbiIKCWlmICRzaXpl
+ICUgMjsKCiAgICB3aGlsZSAoQHBvaW50cykgewoJcHVzaChAY3RybCwgWyBzcGxpY2UoQHBvaW50cywgMCwgMikgXSk7CiAgICB9CiAgICAkc2l6ZSA9IHNj
+YWxhciBAY3RybDsKCiAgICBteSAkbiA9ICRzaXplIC0gMTsKICAgIG15ICRjaG9vc2U7CgogICAgZm9yIChteSAkayA9IDA7ICRrIDw9ICRuOyAkaysrKSB7
+CglpZiAoJGsgPT0gMCkgewoJICAgICRjaG9vc2UgPSAxOwoJfQoJZWxzaWYgKCRrID09IDEpIHsKCSAgICAkY2hvb3NlID0gJG47Cgl9CgllbHNlIHsKCSAg
+ICAkY2hvb3NlICo9ICgkbiAtICRrICsgMSkgLyAkazsKCX0KCSRjdHJsWyRrXS0+W0NYXSA9ICRjdHJsWyRrXS0+W1hdICogJGNob29zZTsKCSRjdHJsWyRr
+XS0+W0NZXSA9ICRjdHJsWyRrXS0+W1ldICogJGNob29zZTsKICAgIH0KCiAgICBibGVzcyBcQGN0cmwsICRjbGFzczsKfQoKCiMtLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBwb2ludCgkdGhldGEpCiMKIyBDYWxjdWxhdGUgKHgs
+IHkpIHBvaW50IG9uIGN1cnZlIGF0IHBvc2l0aW9uICR0aGV0YSAoaW4gdGhlIHJhbmdlIDAgLSAxKQojIGFsb25nIHRoZSBjdXJ2ZS4gIFJldHVybnMgYSBs
+aXN0ICgkeCwgJHkpIG9yIHJlZmVyZW5jZSB0byBhIGxpc3QgCiMgWyR4LCAkeV0gd2hlbiBjYWxsZWQgaW4gbGlzdCBvciBzY2FsYXIgY29udGV4dCByZXNw
+ZWN0aXZlbHkuCiMtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCnN1YiBw
+b2ludCB7CiAgICBteSAoJHNlbGYsICR0KSA9IEBfOwogICAgbXkgJHNpemUgPSBzY2FsYXIgQCRzZWxmOwogICAgbXkgKEBwb2ludHMsICRwb2ludCk7Cgog
+ICAgbXkgJG4gPSAkc2l6ZSAtIDE7CiAgICBteSAkdSA9ICR0OwoKICAgIHB1c2goQHBvaW50cywgWyAkc2VsZi0+WzBdLT5bQ1hdLCAkc2VsZi0+WzBdLT5b
+Q1ldIF0pOwoKICAgIGZvciAobXkgJGsgPSAxOyAkayA8PSAkbjsgJGsrKykgewoJcHVzaChAcG9pbnRzLCBbICRzZWxmLT5bJGtdLT5bQ1hdICogJHUsICRz
+ZWxmLT5bJGtdLT5bQ1ldICogJHUgXSk7CgkkdSAqPSAkdDsKICAgIH0KCiAgICAkcG9pbnQgPSBbIEB7ICRwb2ludHNbJG5dIH0gXTsKICAgIG15ICR0MSA9
+IDEgLSAkdDsKICAgIG15ICR0dCA9ICR0MTsKCiAgICBmb3IgKG15ICRrID0gJG4gLSAxOyAkayA+PSAwOyAkay0tKSB7CgkkcG9pbnQtPltYXSArPSAkcG9p
+bnRzWyRrXS0+W1hdICogJHR0OwoJJHBvaW50LT5bWV0gKz0gJHBvaW50c1ska10tPltZXSAqICR0dDsKCSR0dCA9ICR0dCAqICR0MTsKICAgIH0KCiAgICBy
+ZXR1cm4gd2FudGFycmF5ID8gKEAkcG9pbnQpIDogJHBvaW50Owp9ICAgIAoKCiMtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBjdXJ2ZSgkbnBvaW50cykKIwojIFNhbXBsZSBjdXJ2ZSBhdCAkbnBvaW50cyBwb2ludHMuICBSZXR1
+cm5zIGEgbGlzdCBvciByZWZlcmVuY2UgdG8gYSBsaXN0IAojIG9mICh4LCB5KSBwb2ludHMgYWxvbmcgdGhlIGN1cnZlLCB3aGVuIGNhbGxlZCBpbiBsaXN0
+IG9yIHNjYWxhciBjb250ZXh0CiMgcmVzcGVjdGl2ZWx5LgojLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tCgpzdWIgY3VydmUgewogICAgbXkgKCRzZWxmLCAkbnBvaW50cykgPSBAXzsKICAgICRucG9pbnRzID0gMjAgdW5sZXNzIGRl
+ZmluZWQgJG5wb2ludHM7CiAgICBteSBAcG9pbnRzOwogICAgJG5wb2ludHMtLTsKICAgIGZvcmVhY2ggKG15ICR0ID0gMDsgJHQgPD0gJG5wb2ludHM7ICR0
+KyspIHsKCXB1c2goQHBvaW50cywgKCRzZWxmLT5wb2ludCgkdCAvICRucG9pbnRzKSkpOwogICAgfQogICAgcmV0dXJuIHdhbnRhcnJheSA/IChAcG9pbnRz
+KSA6IFxAcG9pbnRzOwp9CgoxOwoKX19FTkRfXwoKPWhlYWQxIE5BTUUKCk1hdGg6OkJlemllciAtIHNvbHV0aW9uIG9mIEJlemllciBDdXJ2ZXMKCj1oZWFk
+MSBTWU5PUFNJUwoKICAgIHVzZSBNYXRoOjpCZXppZXI7CgogICAgIyBjcmVhdGUgY3VydmUgcGFzc2luZyBsaXN0IG9mICh4LCB5KSBjb250cm9sIHBvaW50
+cwogICAgbXkgJGJlemllciA9IE1hdGg6OkJlemllci0+bmV3KCR4MSwgJHkxLCAkeDIsICR5MiwgLi4uLCAkeG4sICR5bik7CgogICAgIyBvciBwYXNzIHJl
+ZmVyZW5jZSB0byBsaXN0IG9mIGNvbnRyb2wgcG9pbnRzCiAgICBteSAkYmV6aWVyID0gTWF0aDo6QmV6aWVyLT5uZXcoWyAkeDEsICR5MSwgJHgyLCAkeTIs
+IC4uLiwgJHhuLCAkeW5dKTsKCiAgICAjIGRldGVybWluZSAoeCwgeSkgYXQgcG9pbnQgYWxvbmcgY3VydmUsIHJhbmdlIDAgLT4gMQogICAgbXkgKCR4LCAk
+eSkgPSAkYmV6aWVyLT5wb2ludCgwLjUpOwoKICAgICMgcmV0dXJucyBsaXN0IHJlZiBpbiBzY2FsYXIgY29udGV4dAogICAgbXkgJHh5ID0gJGJlemllci0+
+cG9pbnQoMC41KTsKCiAgICAjIHJldHVybiBsaXN0IG9mIDIwICh4LCB5KSBwb2ludHMgYWxvbmcgY3VydmUKICAgIG15IEBjdXJ2ZSA9ICRiZXppZXItPmN1
+cnZlKDIwKTsKCiAgICAjIHJldHVybnMgbGlzdCByZWYgaW4gc2NhbGFyIGNvbnRleHQKICAgIG15ICRjdXJ2ZSA9ICRiZXppZXItPmN1cnZlKDIwKTsKCj1o
+ZWFkMSBERVNDUklQVElPTgoKVGhpcyBtb2R1bGUgaW1wbGVtZW50cyB0aGUgYWxnb3JpdGhtIGZvciB0aGUgc29sdXRpb24gb2YgQmV6aWVyIGN1cnZlcwph
+cyBwcmVzZW50ZWQgYnkgUm9iZXJ0IEQuIE1pbGxlciBpbiBHcmFwaGljcyBHZW1zIFYsICJRdWljayBhbmQgU2ltcGxlCkJlemllciBDdXJ2ZSBEcmF3aW5n
+Ii4KCkEgbmV3IEJlemllciBjdXJ2ZSBpcyBjcmVhdGVkIHVzaW5nIHRoZSBuZXcoKSBjb25zdHJ1Y3RvciwgcGFzc2luZyBhIGxpc3QKb2YgKHgsIHkpIGNv
+bnRyb2wgcG9pbnRzLgoKICAgIHVzZSBNYXRoOjpCZXppZXI7CgogICAgbXkgQGNvbnRyb2wgPSAoIDAsIDAsIDEwLCAyMCwgMzAsIC0yMCwgNDAsIDAgKTsK
+ICAgIG15ICRiZXppZXIgID0gTWF0aDo6QmV6aWVyLT5uZXcoQGNvbnRyb2wpOwoKQWx0ZXJuYXRlbHksIGEgcmVmZXJlbmNlIHRvIGEgbGlzdCBvZiBjb250
+cm9sIHBvaW50cyBtYXkgYmUgcGFzc2VkLgoKICAgIG15ICRiZXppZXIgID0gTWF0aDo6QmV6aWVyLT5uZXcoXEBjb250cm9sKTsKClRoZSBwb2ludCgkdGhl
+dGEpIG1ldGhvZCBjYW4gdGhlbiBiZSBjYWxsZWQgb24gdGhlIG9iamVjdCwgcGFzc2luZyBhCnZhbHVlIGluIHRoZSByYW5nZSAwIHRvIDEgd2hpY2ggcmVw
+cmVzZW50cyB0aGUgZGlzdGFuY2UgYWxvbmcgdGhlCmN1cnZlLiAgV2hlbiBjYWxsZWQgaW4gbGlzdCBjb250ZXh0LCB0aGUgbWV0aG9kIHJldHVybnMgdGhl
+IHggYW5kIHkKY29vcmRpbmF0ZXMgb2YgdGhhdCBwb2ludCBvbiB0aGUgQmV6aWVyIGN1cnZlLgoKICAgIG15ICgkeCwgJHkpID0gJGJlemllci0+cG9pbnQo
+MC41KTsKICAgIHByaW50ICJ4OiAkeCAgeTogJHlcbgoKV2hlbiBjYWxsZWQgaW4gc2NhbGFyIGNvbnRleHQsIGl0IHJldHVybnMgYSByZWZlcmVuY2UgdG8g
+YSBsaXN0IGNvbnRhaW5pbmcKdGhlIHggYW5kIHkgY29vcmRpbmF0ZXMuCgogICAgbXkgJHBvaW50ID0gJGJlemllci0+cG9pbnQoMC41KTsKICAgIHByaW50
+ICJ4OiAkcG9pbnQtPlswXSAgeTogJHBvaW50LT5bMV1cbiI7CgpUaGUgY3VydmUoJG4pIG1ldGhvZCBjYW4gYmUgdXNlZCB0byByZXR1cm4gYSBzZXQgb2Yg
+cG9pbnRzIHNhbXBsZWQKYWxvbmcgdGhlIGxlbmd0aCBvZiB0aGUgY3VydmUgKGkuZS4gaW4gdGhlIHJhbmdlIDAgPD0gJHRoZXRhIDw9IDEpLgpUaGUgcGFy
+YW1ldGVyIGluZGljYXRlcyB0aGUgbnVtYmVyIG9mIHNhbXBsZSBwb2ludHMgcmVxdWlyZWQsCmRlZmF1bHRpbmcgdG8gMjAgaWYgdW5kZWZpbmVkLiAgVGhl
+IG1ldGhvZCByZXR1cm5zIGEgbGlzdCBvZiAoJHgxLAokeTEsICR4MiwgJHkyLCAuLi4sICR4biwgJHluKSBwb2ludHMgd2hlbiBjYWxsZWQgaW4gbGlzdCBj
+b250ZXh0LCBvciAKYSByZWZlcmVuY2UgdG8gc3VjaCBhbiBhcnJheSB3aGVuIGNhbGxlZCBpbiBzY2FsYXIgY29udGV4dC4KCiAgICBteSBAcG9pbnRzID0g
+JGJlemllci0+Y3VydmUoMTApOwoKICAgIHdoaWxlIChAcG9pbnRzKSB7CglteSAoJHgsICR5KSA9IHNwbGljZShAcG9pbnRzLCAwLCAyKTsKCXByaW50ICJ4
+OiAkeCAgeTogJHlcbiI7CiAgICB9CgogICAgbXkgJHBvaW50cyA9ICRiZXppZXItPmN1cnZlKDEwKTsKCiAgICB3aGlsZSAoQCRwb2ludHMpIHsKCW15ICgk
+eCwgJHkpID0gc3BsaWNlKEAkcG9pbnRzLCAwLCAyKTsKCXByaW50ICJ4OiAkeCAgeTogJHlcbiI7CiAgICB9Cgo9aGVhZDEgQVVUSE9SCgpBbmR5IFdhcmRs
+ZXkgRTxsdD5hYndAa2ZzLm9yZ0U8Z3Q+Cgo9aGVhZDEgU0VFIEFMU08KCkdyYXBoaWNzIEdlbXMgNSwgZWRpdGVkIGJ5IEFsYW4gVy4gUGFldGgsIEFjYWRl
+bWljIFByZXNzLCAxOTk1LApJU0JOIDAtMTItNTQzNDU1LTMuICBTZWN0aW9uIElWLjgsICdRdWljayBhbmQgU2ltcGxlIEJlemllciBDdXJ2ZQpEcmF3aW5n
+JyBieSBSb2JlcnQgRC4gTWlsbGVyLCBwYWdlcyAyMDYtMjA5LgoKPWN1dAo=
+EOF
+}
+
+check_bezier()
+{
+	local file1=~Bezier.pm
+	local file2=~bezier.pl
+
+	test -s "$file1" || \
+		bezier_base64 | base64 -d >~Bezier.pm
+
+	test -s "$file2" && return
+	bezier_script >"$file2"
+	chmod +x "$file2"
 }
 
 check_command()
@@ -532,6 +669,10 @@ check_command()
 				;;
 				compare|convert)
 					app='imagemagick'
+				;;
+				bezier)
+					check_bezier
+					app='perl'
 				;;
 			esac
 
@@ -655,6 +796,11 @@ case "$ACTION" in
 	;;
 	clearcache)
 		clearcache
+	;;
+	clickat)
+		# TODO: human mouse move
+		check_command 'bezier'
+		xdotool mousemove "342" "342" click 1 mousemove restore
 	;;
 	clickstring)
 		PLAIN="$( url_decode "$ARG" )"
@@ -939,3 +1085,4 @@ RC=$? && rememberRC() { return "$RC"; }
 [ -n "$MESSAGE" ] && echo "$MESSAGE" >/tmp/MESSAGE
 rememberRC
 }
+
