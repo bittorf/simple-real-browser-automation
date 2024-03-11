@@ -538,7 +538,7 @@ my @control = ( \$x0, \$y0, \$x1, \$y1, \$x2, \$y2 );
 my \$bezier = Math::Bezier->new(@control);
 
 printf "#!/bin/sh\n\n";
-printf "xdotool \\\n";
+printf "xdotool \\\\\n";
 
 for ( my \$i = 0; \$i < (\$MAXX+1); \$i++) {
 	my \$divisor = \$i / \$MAXX;
@@ -550,7 +550,7 @@ for ( my \$i = 0; \$i < (\$MAXX+1); \$i++) {
 	}
 	else
 	{
-		printf "mousemove %.0f %.0f sleep 0.001 \\\n", \$x, \$y;
+		printf "mousemove %.0f %.0f sleep 0.001 \\\\\n", \$x, \$y;
 	}
 }
 EOF
@@ -639,11 +639,14 @@ EOF
 
 check_bezier()
 {
-	local file1=~Bezier.pm
-	local file2=~bezier.pl
+	local file1=/usr/local/lib/perl5/site_perl/Math/Bezier.pm
+	local file2=~/bezier.pl
 
-	test -s "$file1" || \
-		bezier_base64 | base64 -d >~Bezier.pm
+	test -s "$file1" || {
+		mkdir -p "$( dirname -- "$file1" )"
+		bezier_base64 | base64 -d >"$file1"
+		chmod +x "$file1"
+	}
 
 	test -s "$file2" && return
 	bezier_script >"$file2"
@@ -677,7 +680,8 @@ check_command()
 			esac
 
 			if apk add "$app"; then
-				test -z "$uptodate" && apk update && uptodate='true'
+				# FIXME! use a marker file and an enforced full install
+				test -z "$uptodate" && apk update >/dev/null && uptodate='true'
 
 				case "$app" in
 					openssh-client)
@@ -798,9 +802,15 @@ case "$ACTION" in
 		clearcache
 	;;
 	clickat)
-		# TODO: human mouse move
+		PLAIN="$( url_decode "$ARG" )"		# e.g. 320 200
+		for DEST_X in $PLAIN; do break; done
+		for DEST_Y in $PLAIN; do true; done
+
+		# shellcheck disable=SC2046
+		eval $( xdotool getmouselocation --shell )	# X, Y, SCREEN, WINDOW
 		check_command 'bezier'
-		xdotool mousemove "342" "342" click 1 mousemove restore
+		~/bezier.pl "$X" "$Y" "$DEST_X" "$DEST_Y"
+		xdotool click 1
 	;;
 	clickstring)
 		PLAIN="$( url_decode "$ARG" )"
@@ -1072,6 +1082,7 @@ EOF
     "exampleM":       "               .../action=startwebgl",
     "exampleN":       "               .../location=40.7590,-73.9845,666.0",
     "exampleO":       "               .../clickstring=Google Suche",
+    "exampleP":       "               .../clickat=320+200",
 
     "see": "https://github.com/bittorf/simple-real-browser-automation"
   }
