@@ -500,8 +500,8 @@ images_get_first_diff_xy()
 	DIFF_X="$( echo "$xy" | cut -d',' -f1 )"
 	DIFF_Y="$( echo "$xy" | cut -d',' -f2 )"
 
-	if [ "${DIFF_X:-99}" -lt 80 ]; then
-		MESSAGE='only the popped up searchfield was found'
+	if [ "${DIFF_X:-99}" -lt 80 -a "$DIFF_Y" -lt 20 ]; then
+		MESSAGE="only the popped up searchfield was found: diffXY: $DIFF_X/$DIFF_Y"
 		DIFF_X=
 		DIFF_Y=
 		rc=2
